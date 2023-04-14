@@ -5,28 +5,8 @@ import { useState } from "react";
 import CreateOrder from "./modal";
 import { IOrder } from "@/interfaces";
 
-const ORDERS = [{
-    collection: {
-        address: '0x123',
-        name: 'CryptoPunks',
-        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-    },
-    quantity: 10,
-    price: 0.1,
-
-},
-{
-    collection: {
-        address: '0x456',
-        name: 'CryptoPunks',
-        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-    },
-    quantity: 10,
-    price: 0.1,
-}];
-
 export default function Create() {
-    const [orders, setOrders] = useState<IOrder[]>(ORDERS);
+    const [orders, setOrders] = useState<IOrder[]>([]);
 
     const insertOrder = (order: IOrder): void => {
         setOrders([...orders, order]);
