@@ -28,7 +28,7 @@ interface IPoolTypes {
     }
 
     /// @dev the parameters of a box pool
-    struct BoxPoolParams {
+    struct PoolParams {
         NFTOrderBatch[] nftOrderBatches; // the "NFTBuyOrder"s that you want to include in the pool
         uint256 mintEndTime; // the end time of the minting period
         uint256 feeRate; // the protocol fee rate in basis points (i.e, 100 = 1%)

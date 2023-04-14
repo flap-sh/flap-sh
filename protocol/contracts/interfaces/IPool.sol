@@ -54,7 +54,7 @@ interface IPool is IPoolTypes{
 
     /// @notice get the params of the box pool 
     /// @return the params of the box pool 
-    function params() external view returns (BoxPoolParams memory);
+    function params() external view returns (PoolParams memory);
 
     /// @dev a box pool only acccepts crosschain messages if the pool is in STATE_REVEALABLE
     ///      a box pool only accepts the following types of cross chain messages:
