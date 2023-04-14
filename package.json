@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["app", "protocol"],
+  "engines": {
+    "node": ">=16 <=18"
+  }
+}
