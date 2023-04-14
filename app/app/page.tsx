@@ -42,11 +42,10 @@ export default function Home() {
                 </span>
                 <div className="flex flex-row align-center pb-8 pt-10">
                     <div className="text-2xl pr-3">Pools</div>
-                    <a href="#" className="w-5 hover:cursor-pointer flex items-center">
+                    <a href="/create" className="w-5 hover:cursor-pointer flex items-center">
                         +
                     </a>
                 </div>
-
             </div>
             <table className="table-auto w-full text-left">
                 <thead >
