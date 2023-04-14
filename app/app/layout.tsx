@@ -1,8 +1,9 @@
 import './globals.css'
+import { RootProvider } from "@/context";
 
 export const metadata = {
-    title: 'flap.sh - Filp NFTs like a rich!',
-    description: 'Filp NFTs like a rich!',
+    title: 'flap.sh - Filp NFTs like the rich!',
+    description: 'Filp NFTs like the rich!',
 }
 
 export default function RootLayout({
@@ -12,7 +13,9 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <RootProvider>
+                <body>{children}</body>
+            </RootProvider>
         </html>
     )
 }
