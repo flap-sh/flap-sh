@@ -3,6 +3,9 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  images: {
+    domains: ['logo.nftscan.com'],
+  },
 }
 
 module.exports = nextConfig
