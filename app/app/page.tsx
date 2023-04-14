@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 
 const data = [{
     "id": "1",
@@ -66,7 +67,7 @@ export default function Home() {
                             <td className="flex flex-row items-center h-10">
                                 {/* TODO: sorting */}
                                 {d.collections.map((c, idx) => (
-                                    <img key={idx} className="w-5 mr-2" src={c.logo} alt={c.address} />
+                                    <Image key={idx} height={20} width={20} className="mr-2" src={c.logo} alt={c.address} />
                                 ))}
                             </td>
                             <td>{d.status}</td>

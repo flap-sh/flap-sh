@@ -1,6 +1,7 @@
 "use client"
 
 /* page create */
+import Image from "next/image";
 import { useState } from "react";
 import CreateOrder from "./modal";
 import { IOrder } from "@/interfaces";
@@ -22,12 +23,12 @@ export default function Create() {
                     <br /><br />
 
                     Once a pool created, people can mint items from the pool, the item could
-                    be any of the collections in the pool, it's randomly.
+                    be any of the collections in the pool, it&quot;s randomly.
 
                     <br /><br />
                     Get NFT or ETH after revealing depends on if the pool is filled up or not,
                     for filling up the pool, we will provide scripts for people to do it, which
-                    are called "keeprs" in flap.sh.
+                    are called <b>keeprs</b> in flap.sh.
 
                     The keepers will be rewarded with ETH from the fees of the pool.
                 </span>
@@ -52,8 +53,10 @@ export default function Create() {
                         {orders.map((order) => (
                             <tr key={order.collection.address} className="leading-10">
                                 <td title={order.collection.address} className="flex flex-row items-center">
-                                    <img
-                                        className="w-4 h-4 mr-2"
+                                    <Image
+                                        height={15}
+                                        width={20}
+                                        className="mr-2"
                                         src={order.collection.logo}
                                         alt={order.collection.address}
                                     />
