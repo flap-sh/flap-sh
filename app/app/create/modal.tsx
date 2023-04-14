@@ -1,7 +1,7 @@
 "use client"
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { IOrder, ICollection } from "@/interfaces";
 import { CountInput, PriceInput, CollectionInput } from "./inputs";
 
@@ -19,7 +19,8 @@ export default function CreateOrder({
     const [isOpen, setIsOpen] = useState(false)
     const [value, setValue] = useState<string>("")
     const [count, setCount] = useState<string>("")
-    const [_collection, setCollection] = useState<ICollection>();
+    const [collection, setCollection] = useState<ICollection>();
+    const [disable, setDisable] = useState(true)
 
     function closeModal() {
         setIsOpen(false)
@@ -29,6 +30,42 @@ export default function CreateOrder({
         setIsOpen(true)
     }
 
+    const create = () => {
+        if (
+            collection
+            && value != ""
+            && value != "0"
+            && count != ""
+            && count != "0"
+        ) {
+            insertOrder({
+                collection,
+                quantity: parseFloat(count),
+                price: parseFloat(value),
+            });
+
+            // reset values
+            setCount("")
+            setValue("")
+            setCollection(undefined);
+        }
+
+        closeModal()
+    }
+
+    useEffect(() => {
+        if (
+            collection
+            && value != ""
+            && value != "0"
+            && count != ""
+            && count != "0"
+        ) {
+            setDisable(false)
+        } else {
+            setDisable(true)
+        }
+    }, [collection, value, count])
 
     return (
         <>
@@ -84,8 +121,9 @@ export default function CreateOrder({
                                         <div>
                                             <button
                                                 type="button"
+                                                disabled={disable}
                                                 className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-gray-600 disabled:text-gray-300"
-                                                onClick={() => { alert("create!") }}
+                                                onClick={create}
                                             >
                                                 Do it!
                                             </button>
