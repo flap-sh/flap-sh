@@ -5,7 +5,7 @@ pragma solidity ^0.8.17;
 interface ICrossChainMessages {
     enum MessageType {
         MSG_TYPE_NFT_BRIDGE_L1ToL2, // bridge NFT from L1 to L2
-        MSG_TYPE_NFT_BRIDGE_L2ToL1, // bridge NFT from L2 to L1
+        MSG_TYPE_NFT_BRIDGE_L2ToL1, // bridge NFT from L2 back to L1
         MSG_TYPE_NFT_BRIDGE_ENABLE_COLLECTION, // enable collection to be bridged from L1 to L2
         MSG_TYPE_REVEAL_SEED_REQUEST, // request to reveal the seed
         MSG_TYPE_REVEAL_SEED_DELIVERY // deliver the seed
