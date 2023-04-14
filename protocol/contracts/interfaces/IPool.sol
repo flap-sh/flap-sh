@@ -9,12 +9,19 @@ import "./ICrossChainMessages.sol";
 import "./IPoolTypes.sol";
 
 
+
 /// @dev   A box Pool is a collection of boxs, which are ERC721 tokens.
 ///        After the pool is revealed, each box will have a "buyorder" in it.
 ///        If the "buyorder" in a box is filled, the box owner can redeem the NFT by burning the box.
 ///        If the "buyorder" in a box is not filled, the box owner can redeem the ethers by burning the box.
 /// @author flap.sh team & github copilot :)
-interface IPool is IPoolTypes{
+
+/// To workaround the spurious dragon size limit, we split the interface into different parts
+
+
+
+/// @dev All the events emitted from the Box Pool 
+interface IPoolEvents is IPoolTypes{
 
     /// @notice emitted when a box is redeemed
     /// @param boxID - the ID of the box
@@ -51,23 +58,43 @@ interface IPool is IPoolTypes{
 
     /// @notice emitted when the reveal process is restarted
     event RevealRestarted();
+}
 
+
+
+/// @title  Pool Facet: ERC721 
+/// @author 
+/// @notice 
+interface IPoolFacetsERC721 is IERC721MetadataUpgradeable, IERC721ReceiverUpgradeable, IPoolEvents{}
+
+
+/// @title  Pool Facet: Params
+interface IPoolFacetParams is IPoolTypes {
     /// @notice get the params of the box pool 
     /// @return the params of the box pool 
     function params() external view returns (PoolParams memory);
 
+    /// @notice initialize the box pool
+    function initialize(PoolParams memory _p) external;
+}
+
+
+
+/// @title Pool Facet: Reveal 
+interface IPoolFacetReveal is IBridgeMessageReceiver,ICrossChainMessages, IPoolEvents{
     /// @dev a box pool only acccepts crosschain messages if the pool is in STATE_REVEALABLE
     ///      a box pool only accepts the following types of cross chain messages:
     ///       - MSG_TYPE_REVEAL_SEED_REQUEST : a seed is requested from L1
-    ///       - MSG_TYPE_REVEAL_SEED_DELIVERY : a seed is delivered from L1
+    ///       - MSG_TYPE_REVEAL_SEED_DELIVERY : a seed is delivered
     function onMessageReceived(address originAddress, uint32 originNetwork, bytes memory data)
         external
-        payable;
+        payable
+        override;
 
     /// @dev restart the reveal process
     ///
     ///      - this function can only be called when the pool is in STATE_REVEALABLE
-    ///      - Only the owner can call this function
+    ///      - Only the DAO can call this function
     ///      - After calling this function, the last seed request will be cleared
     ///
     ///      In most of the cases, this function should not be used.
@@ -81,6 +108,11 @@ interface IPool is IPoolTypes{
     ///
     ///      - learn more: https://www.paradigm.xyz/2023/01/eth-rng
     function restartReveal() external;
+}
+
+
+// facet: buyorder and box logcis 
+interface IPoolFacetBuyOrderBox is IPoolEvents {
 
     /// @return the price of each box
     function mintPrice() external view returns (uint256);
@@ -115,6 +147,8 @@ interface IPool is IPoolTypes{
     /// @param tokenID The id of the NFT selling to the pool
     function fillOrder(uint256 orderID, uint256 tokenID) external;
 
+
+
     /// @dev The creator claims its fee. 
     ///      this function can only be called when the pool is in STATE_REDEEMABLE
     function claimCreatorFee() external;
@@ -137,6 +171,23 @@ interface IPool is IPoolTypes{
     function currentSupply() external view returns (uint256);
 
 }
+
+
+/// facet: main entry point
+interface IPoolFacetEntry {
+    /// @dev init all the facets
+    function initFacets(address[] memory facets) external;
+}
+
+
+
+/// @dev   A box Pool is a collection of boxs, which are ERC721 tokens.
+///        After the pool is revealed, each box will have a "buyorder" in it.
+///        If the "buyorder" in a box is filled, the box owner can redeem the NFT by burning the box.
+///        If the "buyorder" in a box is not filled, the box owner can redeem the ethers by burning the box.
+/// @author flap.sh team & github copilot :)
+interface IPool is IPoolFacetsERC721, IPoolFacetParams, IPoolFacetReveal,IPoolFacetBuyOrderBox,IPoolFacetEntry {}
+
 
 
 
