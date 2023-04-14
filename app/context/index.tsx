@@ -6,6 +6,7 @@
 import { WagmiConfig, createClient, useAccount } from 'wagmi'
 import { getDefaultProvider } from 'ethers'
 import Login from '@/components/Login'
+import { useIsMounted } from '@/hooks/useIsMounted'
 
 const client = createClient({
     autoConnect: true,
@@ -13,12 +14,12 @@ const client = createClient({
 })
 
 export function RootProvider({ children }: { children: React.ReactNode }) {
-    const { isConnected } = useAccount()
+    const { isConnected } = useAccount();
+    const isMounted = useIsMounted();
 
     return (
         <WagmiConfig client={client}>
-
-            {isConnected ? children : <Login />}
+            {isMounted && !isConnected ? <Login /> : children}
         </WagmiConfig>
     )
 
