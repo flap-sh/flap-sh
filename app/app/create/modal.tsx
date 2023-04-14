@@ -30,7 +30,6 @@ export default function CreateOrder({
     const [value, setValue] = useState<string>("")
     const [count, setCount] = useState<string>("")
     const [collection, setCollection] = useState<ICollection>();
-    const [disable, setDisable] = useState(true)
 
     function closeModal() {
         setIsOpen(false)
@@ -44,6 +43,7 @@ export default function CreateOrder({
 
         setIsOpen(true)
     }
+
 
     const create = () => {
         if (
@@ -68,24 +68,26 @@ export default function CreateOrder({
         closeModal()
     }
 
-    useEffect(() => {
-        if (
-            collection
-            && value != ""
-            && value != "0"
-            && count != ""
-            && count != "0"
-        ) {
-            setDisable(false)
-        } else {
-            setDisable(true)
-        }
-    }, [collection, value, count])
 
+    const disabled = useMemo(() => {
+        return (!collection
+            || value == ""
+            || value == "0"
+            || count == ""
+            || count == "0")
+    }, [collection, value, count]);
 
     const createdCollections = useMemo(() => {
         return orders.map((o) => o.collection.address)
     }, [orders])
+
+    const totalAmount = useMemo(() => {
+        if (value != "" && count != "") {
+            return parseFloat(value) * parseFloat(count)
+        }
+
+        return 0
+    }, [value, count]);
 
     return (
         <>
@@ -144,7 +146,7 @@ export default function CreateOrder({
                                         <div>
                                             <button
                                                 type="button"
-                                                disabled={disable}
+                                                disabled={disabled}
                                                 className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-gray-600 disabled:text-gray-300"
                                                 onClick={create}
                                             >
@@ -159,7 +161,7 @@ export default function CreateOrder({
                                             </button>
                                         </div>
                                         <div className="pr-1">
-                                            <span>Total Amount: 111&nbsp;E</span>
+                                            <span>Total Amount: {totalAmount}&nbsp;E</span>
                                         </div>
                                     </div>
                                 </Dialog.Panel>
