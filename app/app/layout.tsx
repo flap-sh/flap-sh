@@ -1,8 +1,10 @@
 import './globals.css'
+import { RootProvider } from "@/context";
+import Navbar from "@/components/Navbar"
 
 export const metadata = {
-    title: 'flap.sh - Filp NFTs like a rich!',
-    description: 'Filp NFTs like a rich!',
+    title: 'flap.sh - Filp NFTs like the rich!',
+    description: 'Filp NFTs like the rich!',
 }
 
 export default function RootLayout({
@@ -12,7 +14,13 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <body className="max-w-6xl m-auto px-8">
+                <RootProvider>
+                    <Navbar />
+                    {children}
+                </RootProvider>
+            </body>
         </html>
     )
+
 }
