@@ -1,9 +1,19 @@
 "use client"
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useMemo } from "react";
 import { IOrder, ICollection } from "@/interfaces";
 import { CountInput, PriceInput, CollectionInput } from "./inputs";
+
+const collections = [{
+    address: '0x123',
+    name: 'CryptoPunks',
+    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+}, {
+    address: '0x456',
+    name: 'BAYC',
+    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+}];
 
 
 /**
@@ -27,6 +37,11 @@ export default function CreateOrder({
     }
 
     function openModal() {
+        if (createdCollections.length == collections.length) {
+            alert("no avaiable collections to create");
+            return
+        }
+
         setIsOpen(true)
     }
 
@@ -66,6 +81,11 @@ export default function CreateOrder({
             setDisable(true)
         }
     }, [collection, value, count])
+
+
+    const createdCollections = useMemo(() => {
+        return orders.map((o) => o.collection.address)
+    }, [orders])
 
     return (
         <>
@@ -110,7 +130,10 @@ export default function CreateOrder({
                                         Create Order
                                     </Dialog.Title>
                                     <div className="mt-6 mb-10">
-                                        <CollectionInput setCollection={setCollection} />
+                                        <CollectionInput
+                                            collections={collections.filter((c) => !createdCollections.includes(c.address))}
+                                            setCollection={setCollection}
+                                        />
                                         <div className="h-5"></div>
                                         <CountInput count={count} setCount={setCount} />
                                         <div className="h-5"></div>

@@ -92,24 +92,15 @@ export function PriceInput({
 }
 
 
-const collections = [{
-    address: '0x123',
-    name: 'CryptoPunks',
-    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-}, {
-    address: '0x456',
-    name: 'BAYC',
-    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-}];
-
-
 function classNames(...classes: any[]) {
     return classes.filter(Boolean).join(" ");
 }
 
 export function CollectionInput({
+    collections,
     setCollection
 }: {
+    collections: ICollection[],
     setCollection: (collection: ICollection) => void
 }) {
     const [selected, setSelected] = useState(collections[0]);
