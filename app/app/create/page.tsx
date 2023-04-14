@@ -17,7 +17,7 @@ const ORDERS = [{
 },
 {
     collection: {
-        address: '0x123',
+        address: '0x456',
         name: 'CryptoPunks',
         logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
     },

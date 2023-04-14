@@ -2,8 +2,8 @@
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { IOrder } from "@/interfaces";
-import { CountInput, PriceInput } from "./inputs";
+import { IOrder, ICollection } from "@/interfaces";
+import { CountInput, PriceInput, CollectionInput } from "./inputs";
 
 
 /**
@@ -19,6 +19,7 @@ export default function CreateOrder({
     const [isOpen, setIsOpen] = useState(false)
     const [value, setValue] = useState<string>("")
     const [count, setCount] = useState<string>("")
+    const [_collection, setCollection] = useState<ICollection>();
 
     function closeModal() {
         setIsOpen(false)
@@ -71,11 +72,8 @@ export default function CreateOrder({
                                     >
                                         Create Order
                                     </Dialog.Title>
-                                    <div className="mt-6 mb-10 flex flex-col">
-                                        <div className="flex flex-col">
-                                            <span>collection</span>
-                                            <input className="" />
-                                        </div>
+                                    <div className="mt-6 mb-10">
+                                        <CollectionInput setCollection={setCollection} />
                                         <div className="h-5"></div>
                                         <CountInput count={count} setCount={setCount} />
                                         <div className="h-5"></div>
