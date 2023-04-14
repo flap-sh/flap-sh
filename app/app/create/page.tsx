@@ -1,22 +1,37 @@
-/* page create */
+"use client"
 
-const orders = [{
-    address: '0x123',
-    name: 'CryptoPunks',
-    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+/* page create */
+import { useState } from "react";
+import CreateOrder from "./modal";
+import { IOrder } from "@/interfaces";
+
+const ORDERS = [{
+    collection: {
+        address: '0x123',
+        name: 'CryptoPunks',
+        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+    },
     quantity: 10,
     price: 0.1,
 
 },
 {
-    address: '0x123',
-    name: 'CryptoPunks',
-    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+    collection: {
+        address: '0x123',
+        name: 'CryptoPunks',
+        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+    },
     quantity: 10,
     price: 0.1,
 }];
 
 export default function Create() {
+    const [orders, setOrders] = useState<IOrder[]>(ORDERS);
+
+    const insertOrder = (order: IOrder): void => {
+        setOrders([...orders, order]);
+    }
+
     return (
         <main>
             <div className="text-left">
@@ -38,9 +53,7 @@ export default function Create() {
                 </span>
                 <div className="flex flex-row align-center pb-8 pt-10">
                     <div className="text-2xl pr-3">Create Order</div>
-                    <a href="#" className="w-5 hover:cursor-pointer flex items-center">
-                        +
-                    </a>
+                    <CreateOrder orders={orders} insertOrder={insertOrder} />
                 </div>
             </div>
 
@@ -57,14 +70,14 @@ export default function Create() {
                     </thead>
                     <tbody>
                         {orders.map((order) => (
-                            <tr key={order.address} className="leading-10">
-                                <td title={order.address} className="flex flex-row items-center">
+                            <tr key={order.collection.address} className="leading-10">
+                                <td title={order.collection.address} className="flex flex-row items-center">
                                     <img
                                         className="w-4 h-4 mr-2"
-                                        src={order.logo}
-                                        alt={order.address}
+                                        src={order.collection.logo}
+                                        alt={order.collection.address}
                                     />
-                                    <span className="mr-2">{order.name}</span>
+                                    <span className="mr-2">{order.collection.name}</span>
                                 </td>
                                 <td>{order.quantity}</td>
                                 <td>{order.price}</td>
