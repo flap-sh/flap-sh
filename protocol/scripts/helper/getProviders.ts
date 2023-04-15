@@ -21,12 +21,14 @@ export function getProviders(): MultiChainProvider {
     return {l1, l2};
 }
 
-export function getSigners(): MultiChainSigner {
+export function getSigners(key?:string): MultiChainSigner {
+
+    
     
     const {l1, l2} =getProviders();
 
-    const l1Signer = new ethers.Wallet(process.env.PRIVATE_KEY!, l1);
-    const l2Signer = new ethers.Wallet(process.env.PRIVATE_KEY!, l2);
+    const l1Signer = new ethers.Wallet(key || process.env.PRIVATE_KEY!, l1);
+    const l2Signer = new ethers.Wallet(key || process.env.PRIVATE_KEY!, l2);
 
     return {
         l1: l1Signer,

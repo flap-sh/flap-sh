@@ -4,7 +4,7 @@ import { ZKEVM_BRIDGE_ADDRESS } from "../polygon/constants";
 import dotenv from "dotenv";
 import { NFTBridgeL1__factory, TestNFT__factory } from "@tc/index";
 import { TestAzukiAddr } from "./constants";
-import { ADDR_AZUKI, ADDR_BAYC, ADDR_CRYPTOPUNKS, ADDR_DOODLES, ADDR_NFTBRIDGE_L1 } from "scripts/deployed";
+import { ADDR_AZUKI, ADDR_BAYC, ADDR_CRYPTOPUNKS, ADDR_DOODLES, ADDR_NFTBRIDGE_L1, ADDR_PENNY } from "scripts/deployed";
 import { fastestGas } from "scripts/helper/gasPrice";
 
 dotenv.config();
@@ -23,6 +23,7 @@ async function main() {
     ADDR_BAYC,
     ADDR_DOODLES,
     ADDR_CRYPTOPUNKS,
+    ADDR_PENNY,
   ]
 
 

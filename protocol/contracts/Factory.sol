@@ -11,8 +11,7 @@ import "./interfaces/IPool.sol";
 contract Factory is IPoolFactory, Ownable {
 
     /// @dev The maximum time that a pool can be open for minting 
-    /// FIXME: 10 min for testing, should be 1 week
-    uint constant public POOL_MINT_TIMEOUT = 10 minutes; 
+    uint  public POOL_MINT_TIMEOUT = 30 minutes; 
 
     /// @dev The fee rate in basis points (10%)
     uint constant public FEE_RATE = 1000;
@@ -124,6 +123,9 @@ contract Factory is IPoolFactory, Ownable {
         IPool(pool).initialize(params);
         
 
+        // add to pool mapping 
+        _pools[_numPools] = pool;
+
         // emit NewPoolCreated 
         emit NewPoolCreated(pool, msg.sender, _numPools++);
 
@@ -166,6 +168,12 @@ contract Factory is IPoolFactory, Ownable {
         _L1SeedProvider = _seedProvider;
     }
 
+
+    /// @dev only the owner can set the MINT_TIMEOUT
+    function setMintTimeout(uint256 _mintTimeout) external onlyOwner{
+        POOL_MINT_TIMEOUT = _mintTimeout;
+    }
+
     /// @dev only the DAO can add or remove collections from the whitelist
     function removeCollectionFromWhitelist(address _collection) external onlyOwner{
             
@@ -181,14 +189,20 @@ contract Factory is IPoolFactory, Ownable {
     }
 
         /// @dev get the info of a box pool 
-    function getPoolInfo(uint256 _poolID) external view returns (PoolParams memory){
+    function getPoolInfo(uint256 _poolID) external view returns (PoolInfo memory){
 
         require(
             _poolID < _numPools,
             "Factory: invalid poolID"
         );
 
-        return IPool(_pools[_poolID]).params();
+        address pool = _pools[_poolID];
+
+        return PoolInfo({
+            poolAddress: pool,
+            state: IPool(pool).poolCachedState(),
+            meta: IPool(pool).params()
+        });
     }
     
 
