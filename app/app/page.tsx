@@ -5,6 +5,9 @@ import { IPool } from "@/interfaces"
 import { useContext, useMemo } from "react";
 import { ContractsContext } from "@/context/contracts";
 import { STATES, usePool } from "@/hooks/usePool"
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 
 const fixed = (value: number) => {
     return (Math.round(value * 100) / 100).toFixed(2);
@@ -18,12 +21,12 @@ export default function Home() {
             <div className="text-left">
                 <span className="max-w-xl inline-block">
                     list of pools created with this protocol, each pool has mixed several collections as a new collection,
-                    sure, with new mint price as well! what about mint Azuki at 0.08 again?
+                    sure, with new mint price as well! what about mint Azuki at <FontAwesomeIcon icon={faEthereum} beat /> 0.08 again?
                 </span>
                 <div className="flex flex-row align-center pb-8 pt-10">
                     <div className="text-2xl pr-3">Pools</div>
                     <a href="/create" className="w-5 hover:cursor-pointer flex items-center">
-                        +
+                        <FontAwesomeIcon icon={faPlus} />
                     </a>
                 </div>
             </div>
@@ -71,7 +74,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                         ))}
                     </span>
                     <span>{STATES[d.state ? d.state : 0]}</span>
-                    <span>{fixed(Number(d.price))}E</span>
+                    <span><FontAwesomeIcon icon={faEthereum} /> {fixed(Number(d.price))}</span>
                     <span>{d.minted}/{d.totalSupply}</span>
                 </div>
             </Disclosure.Button>
