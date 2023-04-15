@@ -6,8 +6,8 @@
 import { WagmiConfig, configureChains, createClient, useAccount } from 'wagmi'
 import Login from '@/components/Login'
 import { useIsMounted } from '@/hooks/useIsMounted'
-import { ContractsProvider } from "./contracts";
-import { TransactionProvider } from "./transaction"
+import { ContractsProvider } from "@/context/contracts";
+import { TransactionProvider } from "@/context/transaction";
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 
 const polygonZkEvmTestnet = {

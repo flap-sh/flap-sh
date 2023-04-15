@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import TransactionModal from "@/components/Transaction";
-import { ContractsContext } from "./contracts";
+import { ContractsContext } from "@/context/contracts";
 import { ICall, ITransactionContext, Status } from "@/interfaces";
 
 export const TransactionContext = createContext<ITransactionContext>({
