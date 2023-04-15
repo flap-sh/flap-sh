@@ -11,8 +11,7 @@ import "./interfaces/IPool.sol";
 contract Factory is IPoolFactory, Ownable {
 
     /// @dev The maximum time that a pool can be open for minting 
-    /// FIXME: 10 min for testing, should be 1 week
-    uint constant public POOL_MINT_TIMEOUT = 10 minutes; 
+    uint  public POOL_MINT_TIMEOUT = 30 minutes; 
 
     /// @dev The fee rate in basis points (10%)
     uint constant public FEE_RATE = 1000;
@@ -164,6 +163,12 @@ contract Factory is IPoolFactory, Ownable {
     /// @dev only the owner can set the seed provider 
     function setSeedProvider(address _seedProvider) external onlyOwner{
         _L1SeedProvider = _seedProvider;
+    }
+
+
+    /// @dev only the owner can set the MINT_TIMEOUT
+    function setMintTimeout(uint256 _mintTimeout) external onlyOwner{
+        POOL_MINT_TIMEOUT = _mintTimeout;
     }
 
     /// @dev only the DAO can add or remove collections from the whitelist
