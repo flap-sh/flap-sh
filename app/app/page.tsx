@@ -67,7 +67,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
             </Disclosure.Button>
             <Disclosure.Panel
                 as="div"
-                className="border border-solid border-gray-300 mt-3 pt-8 px-10 max-w-xl"
+                className="border border-solid border-gray-300 mt-5 my-3 pt-8 px-10 max-w-xl"
             >
                 <div className="grid grid-cols-3 text-center">
                     <span>collection</span>
