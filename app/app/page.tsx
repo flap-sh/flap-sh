@@ -4,6 +4,7 @@ import { Disclosure } from '@headlessui/react'
 import { IPool } from "@/interfaces"
 import { useContext } from "react";
 import { ContractsContext } from "@/context/contracts";
+import { STATES } from "@/hooks/usePool"
 
 export default function Home() {
     const { pools } = useContext(ContractsContext);
@@ -31,8 +32,8 @@ export default function Home() {
                 <span>minted</span>
             </div>
             <div> {/* pool list */}
-                {pools.map((d, idx) => (
-                    <PoolItem key={idx} detail={d as any} />
+                {pools.map((d: IPool, idx: number) => (
+                    <PoolItem key={idx} detail={d} />
                 ))}
             </div>
         </main>
@@ -59,7 +60,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                             />
                         ))}
                     </span>
-                    <span>{d.status}</span>
+                    <span>{STATES[d.state]}</span>
                     <span>{d.price}E</span>
                     <span>{d.minted}/{d.totalSupply}</span>
                 </div>
