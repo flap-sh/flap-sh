@@ -1,3 +1,3 @@
 # flap-sh!
 
-Flip NFTs like a rich!
+Flip-flip NFTs as you own all of them!
