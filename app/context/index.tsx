@@ -3,16 +3,33 @@
  *  Entry of the context of this project.
  */
 
-import { WagmiConfig, createClient, useAccount } from 'wagmi'
-import { getDefaultProvider } from 'ethers'
+import { WagmiConfig, configureChains, createClient, useAccount } from 'wagmi'
 import Login from '@/components/Login'
 import { useIsMounted } from '@/hooks/useIsMounted'
 import { ContractsProvider } from "./contracts";
+import {
+    polygonZkEvm,
+} from "@wagmi/core/chains";
+import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
+
+
+const { provider } = configureChains(
+    [polygonZkEvm],
+    [
+        jsonRpcProvider({
+            priority: 1,
+            rpc: (_) => ({
+                http: "https://rpc.public.zkevm-test.net"
+
+            }),
+        }),
+    ]
+);
 
 const client = createClient({
     autoConnect: true,
-    provider: getDefaultProvider(),
-})
+    provider,
+});
 
 export function RootProvider({ children }: { children: React.ReactNode }) {
     const { isConnected } = useAccount();

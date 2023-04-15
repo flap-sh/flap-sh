@@ -46,10 +46,10 @@ function PoolItem({ detail: d }: { detail: IPool }) {
             <Disclosure.Button className="w-full text-left">
                 <div className="grid grid-cols-6">
                     <span>#{d.id}</span>
-                    <span>{d.address}</span>
+                    <span>{d.address.slice(0, 6) + "..." + d.address.slice(38, 42)}</span>
                     <span className="flex flex-row items-center">
                         {/* TODO: sorting */}
-                        {d.orders.map((c, idx) => (
+                        {d.orders?.map((c, idx) => (
                             <Image
                                 key={idx}
                                 height={15}
@@ -60,7 +60,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                             />
                         ))}
                     </span>
-                    <span>{STATES[d.state]}</span>
+                    <span>{STATES[d.state ? d.state : 0]}</span>
                     <span>{d.price}E</span>
                     <span>{d.minted}/{d.totalSupply}</span>
                 </div>
@@ -74,7 +74,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                     <span>filled</span>
                     <span>chance</span>
                 </div>
-                {d.orders.map((o, idx) => (
+                {d.orders?.map((o, idx) => (
                     <div key={idx} className="grid grid-cols-3 pt-3 text-center">
                         <span className="flex flex-row items-center justify-center">
                             <Image

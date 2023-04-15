@@ -5,7 +5,6 @@ import { useContext, useMemo, useState } from "react";
 import { useAccount } from "wagmi"
 import { STATES } from "@/hooks/usePool";
 
-
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.poolId === pool.id);
 };
@@ -20,24 +19,23 @@ const estimateValueForItem = (pools: IPool[], item: IItem) => {
         return item.cost
     }
 
-    return pool.balance / pool.currentSupply;
+    return Number(pool.balance) / Number(pool.minted);
 };
 
 export default function Portfolio() {
-    const { address: _ } = useAccount();
+    const { address } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
     const [selected, setSelected] = useState<IPool | null>(null);
     const [filter, setFilter] = useState<number>(4);
     const [selectedItems, setSelectedItems] = useState<IItem[]>([]);
 
     const walletItems = useMemo(() => {
-        // TODO: return allItems.filter((item) => item.owner === address);
-        return allItems
+        return allItems.filter((item) => item.owner === address);
     }, [allItems]);
 
     const walletPools = useMemo(() => {
         const addrs = Array.from(new Set(walletItems.map((item) => item.poolId)));
-        return allPools.filter((pool) => addrs.includes(pool.id));
+        return allPools.filter((pool) => addrs.includes(Number(pool.id)));
     }, [walletItems, allPools]);
 
     const items = useMemo(() => {
@@ -73,9 +71,9 @@ export default function Portfolio() {
         return items.reduce((acc, item) => acc + item.cost, 0);
     }, [items]);
 
-    const currentSupply = useMemo(() => {
+    const minted = useMemo(() => {
         if (selected) {
-            return selected.currentSupply + "/" + selected.totalSupply;
+            return selected.minted + "/" + selected.totalSupply;
         }
 
         return items.length + "/" + items.length;
@@ -86,25 +84,37 @@ export default function Portfolio() {
             new Set(walletItems.map((item) => item.poolId))
         );
 
-        return walletPools.filter((pool) => activePoolAddrs.includes(pool.id));
+        return walletPools.filter((pool) => activePoolAddrs.includes(Number(pool.id)));
     }, [walletItems, walletPools]);
 
 
     const hideMint = useMemo(() => {
+        if (selected) {
+            return selected.state !== 0;
+        }
+
         return activePools.filter((pool) => pool.state === 0).length === 0
-    }, [activePools]);
+    }, [selected, activePools]);
 
     const hideRefund = useMemo(() => {
-        return activePools.filter((pool) => pool.state === 1).length === 0
-    }, [activePools]);
+        if (selected) {
+            return selected.state !== 1;
+        }
 
-    const hideClaim = useMemo(() => {
+        return activePools.filter((pool) => pool.state === 1).length === 0
+    }, [selected, activePools]);
+
+    const hideReedem = useMemo(() => {
+        if (selected) {
+            return selected.state !== 3;
+        }
+
         return activePools.filter((pool) => pool.state === 3).length === 0
-    }, [activePools]);
+    }, [selected, activePools]);
 
     const hideToolbar = useMemo(() => {
-        return hideMint && hideRefund && hideClaim;
-    }, [hideMint, hideRefund, hideClaim]);
+        return hideMint && hideRefund && hideReedem
+    }, [hideMint, hideRefund, hideReedem])
 
     const onSelect = (item: IItem) => {
         if (selectedItems.includes(item)) {
@@ -164,7 +174,7 @@ export default function Portfolio() {
                         <span className="w-20">
                             {ownedItemsForPool(pool, walletItems).length}
                         </span>
-                        <span>{STATES[pool.state]}</span>
+                        <span>{STATES[Number(pool.state)]}</span>
                     </div>
                 ))}
             </div>
@@ -175,11 +185,11 @@ export default function Portfolio() {
                     <span className="text-lg col-span-3">{title}</span>
                     <span className="text-sm">EST Value</span>
                     <span className="text-sm">Cost</span>
-                    <span className="text-sm">Currrent Supply</span>
+                    <span className="text-sm">Minted</span>
                     <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
                     <span className="text-md">{estValue}&nbsp;E</span>
                     <span className="text-md">{totalCost}&nbsp;E</span>
-                    <span className="text-md text-center">{currentSupply}</span>
+                    <span className="text-md text-center">{minted}</span>
                 </div>
 
                 {/* List here */}
@@ -228,9 +238,9 @@ export default function Portfolio() {
 
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
-                        hidden={hideClaim}
+                        hidden={hideReedem}
                     >
-                        Claim
+                        Reedem
                     </button>
                 </div>
             </div>
