@@ -1,20 +1,11 @@
 /**
- *  Context for the contracts
+ * Context for the contracts
+ *
+ * this context is actually a database for now lmao
  */
-
-import { createContext } from 'react';
-
-export interface IContractsContext {
-    factory: string;
-    /// whitelisted collections.
-    collections: string[];
-    /// all pools.
-    pools: string[];
-    /// all items in this protocol.
-    ///
-    /// well this context is actually a database!
-    items: string[];
-}
+import { createContext, useMemo, useState } from 'react';
+import { IContractsContext } from '@/interfaces';
+import { pools as ops, collections as ocs, items as ois } from "./mock"
 
 export const ContractsContext = createContext<IContractsContext>({
     factory: "",
@@ -23,12 +14,26 @@ export const ContractsContext = createContext<IContractsContext>({
     items: []
 });
 
+
 export function ContractsProvider({ children }: { children: React.ReactNode }) {
     const factory = "0x000";
-    const collections = ["0x000"];
-    const pools = ["0x000"];
-    const items = ["0x000"];
 
+    const [pools, _setPools] = useState(ops);
+    const [collections, _setCollections] = useState(ocs);
+    const [items, _setItems] = useState(ois);
+
+    // TODO: get this with useMemo and contract calls
+    //
+    // const items = useMemo(() => {
+    //     return pools.reduce((acc, pool) => {
+    //         return acc.concat(pool.items);
+    //     }, []);
+    // }, []);
+    //
+
+    // TODO: fetch data from contracts and set them here
+    //
+    // -> long promise chain
 
     return (
         <ContractsContext.Provider value={{ factory, collections, pools, items }}>

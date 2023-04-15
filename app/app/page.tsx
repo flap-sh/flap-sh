@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import { Disclosure } from '@headlessui/react'
-import { IPoolDetail } from "@/interfaces"
+import { IPool } from "@/interfaces"
 
 const data = [{
     "id": "1",
@@ -88,7 +88,7 @@ export default function Home() {
     )
 }
 
-function PoolItem({ detail: d }: { detail: IPoolDetail }) {
+function PoolItem({ detail: d }: { detail: IPool }) {
     return (
         <Disclosure as="div" className="pt-3">
             <Disclosure.Button className="w-full text-left">

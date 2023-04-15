@@ -22,5 +22,4 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
             {isMounted && !isConnected ? <Login /> : children}
         </WagmiConfig>
     )
-
 }
