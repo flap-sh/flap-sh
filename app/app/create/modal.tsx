@@ -1,20 +1,10 @@
 "use client"
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useEffect, useMemo } from "react";
+import { Fragment, useState, useMemo, useContext } from "react";
 import { IOrder, ICollection } from "@/interfaces";
 import { CountInput, PriceInput, CollectionInput } from "./inputs";
-
-const collections = [{
-    address: '0x123',
-    name: 'CryptoPunks',
-    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-}, {
-    address: '0x456',
-    name: 'BAYC',
-    logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-}];
-
+import { ContractsContext } from "@/context/contracts";
 
 /**
  *  Create order
@@ -30,6 +20,7 @@ export default function CreateOrder({
     const [value, setValue] = useState<string>("")
     const [count, setCount] = useState<string>("")
     const [collection, setCollection] = useState<ICollection>();
+    const { collections } = useContext(ContractsContext);
 
     function closeModal() {
         setIsOpen(false)

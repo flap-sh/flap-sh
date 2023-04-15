@@ -1,62 +1,13 @@
 "use client"
 import Image from "next/image"
 import { Disclosure } from '@headlessui/react'
-import { IPoolDetail } from "@/interfaces"
-
-const data = [{
-    "id": "1",
-    "address": "0x00",
-    "orders": [{
-        collection: {
-            name: "abc",
-            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-            address: "0x00",
-        },
-        quantity: 50,
-        price: 1,
-    },
-    {
-        collection: {
-            name: "abc",
-            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-            address: "0x00",
-        },
-        quantity: 50,
-        price: 1,
-    }],
-    "status": "Mintable",
-    "price": "0.5",
-    "minted": "10",
-    "totalSupply": "100"
-}, {
-    "id": "2",
-    "address": "0x00",
-    "orders": [{
-        collection: {
-            name: "abc",
-            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-            address: "0x00",
-        },
-        quantity: 50,
-        price: 1,
-
-    },
-    {
-        collection: {
-            name: "abc",
-            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-            address: "0x00",
-        },
-        quantity: 50,
-        price: 1,
-    }],
-    "status": "Mintable",
-    "price": "0.5",
-    "minted": "10",
-    "totalSupply": "100"
-}];
+import { IPool } from "@/interfaces"
+import { useContext } from "react";
+import { ContractsContext } from "@/context/contracts";
 
 export default function Home() {
+    const { pools } = useContext(ContractsContext);
+
     return (
         <main className="pt-5">
             <div className="text-left">
@@ -79,8 +30,8 @@ export default function Home() {
                 <span>price</span>
                 <span>minted</span>
             </div>
-            <div> {/* collection list */}
-                {data.map((d, idx) => (
+            <div> {/* pool list */}
+                {pools.map((d, idx) => (
                     <PoolItem key={idx} detail={d as any} />
                 ))}
             </div>
@@ -88,7 +39,7 @@ export default function Home() {
     )
 }
 
-function PoolItem({ detail: d }: { detail: IPoolDetail }) {
+function PoolItem({ detail: d }: { detail: IPool }) {
     return (
         <Disclosure as="div" className="pt-3">
             <Disclosure.Button className="w-full text-left">
