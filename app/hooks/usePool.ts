@@ -193,14 +193,13 @@ export function usePool(address: string) {
     const { wrap } = useContext(TransactionContext);
     const pool = pools.find(p => p.address === address);
 
-
     const mint = useCallback(async () => {
         wrap({
             address: address as any,
             abi: IPoolABI.abi,
             functionName: "mintBox",
             args: [],
-            value: ethers.utils.parseUnits(String(pool?.price?.toString()), "ether").toString(),
+            value: ethers.utils.parseEther(String(pool?.price?.toString())).toString(),
         });
     }, [pool, address, wrap]);
 

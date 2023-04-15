@@ -2,16 +2,31 @@
 
 /* page create */
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CreateOrder from "./modal";
 import { IOrder } from "@/interfaces";
+import { useCreatePool } from "@/hooks/useFactory";
 
 export default function Create() {
     const [orders, setOrders] = useState<IOrder[]>([]);
+    const { create } = useCreatePool(orders);
 
     const insertOrder = (order: IOrder): void => {
         setOrders([...orders, order]);
     }
+
+    const removeOrder = (order: IOrder) => {
+        setOrders(orders.filter((o) => o !== order));
+    }
+
+    const count = useMemo(() => {
+        return orders.reduce((acc, order) => acc + order.quantity, 0);
+    }, [orders]);
+
+    const price = useMemo(() => {
+        const amount = orders.reduce((acc, order) => acc + order.price * order.quantity, 0);
+        return amount / count;
+    }, [orders]);
 
     return (
         <main>
@@ -68,6 +83,19 @@ export default function Create() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* batch orders */}
+            <div
+                className={"pt-12 flex flex-row items-end justify-between pl-3 pr-10" + (orders.length === 0 ? " hidden" : "")}
+            >
+                <div>
+                    <div>Mint Price: {price}</div>
+                    <div>Total Supply: {count}</div>
+                </div>
+                <button className="border-2 border-sloid py-1 px-3 rounded-md" onClick={create}>
+                    Create
+                </button>
             </div>
         </main>
     )

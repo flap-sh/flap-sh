@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-import { useChainId } from "wagmi";
 import { ethers } from "ethers";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import TransactionModal from "@/components/Transaction";
@@ -96,6 +95,7 @@ export function TransactionProvider({ children }: { children: any }) {
             })
             .catch((e) => {
                 setStatus(Status.Err);
+                console.log(e);
                 setError(JSON.stringify(e.reason));
             });
     };

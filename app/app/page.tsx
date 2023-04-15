@@ -107,5 +107,4 @@ function PoolItem({ detail: d }: { detail: IPool }) {
             </Disclosure.Panel>
         </Disclosure>
     )
-
 }
