@@ -170,6 +170,9 @@ interface IPoolFacetBuyOrderBox is IPoolEvents {
     /// @dev get the current supply of the box 
     function currentSupply() external view returns (uint256);
 
+    /// @dev total supply of the box
+    function totalSupply() external view returns (uint256);
+
 }
 
 
