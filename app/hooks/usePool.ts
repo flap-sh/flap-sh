@@ -188,38 +188,39 @@ export function useItems(pools: IPool[]) {
     return { items }
 }
 
-export function usePool(address: string) {
+export function usePool(address?: string) {
     const { pools } = useContext(ContractsContext);
-    const { wrap } = useContext(TransactionContext);
+    const { wrap, multicall } = useContext(TransactionContext);
     const pool = pools.find(p => p.address === address);
 
-    const mint = useCallback(async () => {
+    const mint = useCallback(async (addressOverride?: string, priceOverride?: number) => {
+        const price = priceOverride ? priceOverride : pool?.price;
         wrap({
-            address: address as any,
+            address: addressOverride ? addressOverride : address as any,
             abi: IPoolABI.abi,
             functionName: "mintBox",
             args: [],
-            value: ethers.utils.parseEther(String(pool?.price?.toString())).toString(),
+            value: ethers.utils.parseEther(String(price)).toString(),
         });
     }, [pool, address, wrap]);
 
-    const refund = useCallback(async (id: number) => {
-        wrap({
-            address: address as any,
+    const refund = useCallback(async (ids: number[], addressOverride?: string) => {
+        multicall(ids.map((id) => ({
+            address: addressOverride ? addressOverride : address as any,
             abi: IPoolABI.abi,
             functionName: "refund",
             args: [id],
-        });
-    }, [pool, address, wrap]);
+        })));
+    }, [pool, address, multicall]);
 
-    const redeem = useCallback(async (id: number) => {
-        wrap({
-            address: address as any,
+    const redeem = useCallback(async (ids: number[], addressOverride?: string) => {
+        multicall(ids.map((id) => ({
+            address: addressOverride ? addressOverride : address as any,
             abi: IPoolABI.abi,
             functionName: "refund",
             args: [id],
-        });
-    }, [pool, address, wrap]);
+        })));
+    }, [pool, address, multicall]);
 
     return { mint, refund, redeem }
 }

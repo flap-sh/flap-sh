@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 export interface ICollection {
     logo: string;
     name: string;
@@ -28,8 +30,38 @@ export interface IItem {
     cost: number;
 }
 
+export interface ICall {
+    address: `0x${string}`;
+    abi: any;
+    functionName: string;
+    args: any[];
+    value?: string;
+    cb?: (
+        receipt: ethers.providers.TransactionReceipt,
+        setMessage: (msg: string) => void
+    ) => void;
+}
+
+export enum Status {
+    Ok,
+    Err,
+    Loading,
+}
+
+export interface ITransactionContext {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    status: Status;
+    hash: string | undefined;
+    error: string | undefined;
+    message: string | undefined;
+    wrap: (call: ICall) => void;
+    multicall: (calls: ICall[]) => void;
+}
+
 /// well this context is actually a database!
 export interface IContractsContext {
+    address?: string;
     factory: string;
     createdPools: string[];
     wlCollections: string[];

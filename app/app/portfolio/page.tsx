@@ -3,7 +3,7 @@ import { ContractsContext } from "@/context/contracts";
 import { IItem, IPool } from "@/interfaces";
 import { useContext, useMemo, useState } from "react";
 import { useAccount } from "wagmi"
-import { STATES } from "@/hooks/usePool";
+import { STATES, usePool } from "@/hooks/usePool";
 
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.poolId === pool.id);
@@ -28,6 +28,7 @@ export default function Portfolio() {
     const [selected, setSelected] = useState<IPool | null>(null);
     const [filter, setFilter] = useState<number>(4);
     const [selectedItems, setSelectedItems] = useState<IItem[]>([]);
+    const { mint, refund, redeem } = usePool();
 
     const walletItems = useMemo(() => {
         return allItems.filter((item) => item.owner === address);
@@ -229,6 +230,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs"
                         hidden={hideMint}
+                        onClick={() => mint(selected?.address, selected?.price)}
                     >
                         Mint
                     </button>
@@ -236,6 +238,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
                         hidden={hideRefund}
+                        onClick={() => refund(selectedItems.map((i) => (i.id)), selected?.address)}
                     >
                         Refund
                     </button>
@@ -243,6 +246,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
                         hidden={hideReedem}
+                        onClick={() => redeem(selectedItems.map((i) => (i.id)), selected?.address)}
                     >
                         Reedem
                     </button>

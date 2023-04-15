@@ -2,8 +2,9 @@ import { Fragment, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { TransactionContext, Status } from "@/context/transaction";
+import { TransactionContext } from "@/context/transaction";
 import Spinner from "@/components/Spinner";
+import { Status } from "@/interfaces";
 
 interface ModalData {
     title: string;

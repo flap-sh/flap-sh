@@ -1,40 +1,8 @@
 import { createContext, useContext, useState } from "react";
-import { ethers } from "ethers";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import TransactionModal from "@/components/Transaction";
 import { ContractsContext } from "./contracts";
-
-export enum Status {
-    Ok,
-    Err,
-    Loading,
-}
-
-export interface ITransactionContext {
-    open: boolean;
-    setOpen: (open: boolean) => void;
-    status: Status;
-    hash: string | undefined;
-    error: string | undefined;
-    message: string | undefined;
-    wrap: ({
-        address,
-        abi,
-        functionName,
-        args,
-        cb,
-    }: {
-        address: `0x${string}`;
-        abi: any;
-        functionName: string;
-        args: any[];
-        value?: string;
-        cb?: (
-            receipt: ethers.providers.TransactionReceipt,
-            setMessage: (msg: string) => void
-        ) => void;
-    }) => void;
-}
+import { ICall, ITransactionContext, Status } from "@/interfaces";
 
 export const TransactionContext = createContext<ITransactionContext>({
     open: false,
@@ -43,7 +11,8 @@ export const TransactionContext = createContext<ITransactionContext>({
     hash: undefined,
     error: undefined,
     message: undefined,
-    wrap: () => { },
+    wrap: (_: ICall) => { },
+    multicall: (_: ICall[]) => { }
 });
 
 export function TransactionProvider({ children }: { children: any }) {
@@ -61,17 +30,7 @@ export function TransactionProvider({ children }: { children: any }) {
         args,
         value,
         cb,
-    }: {
-        address: `0x${string}`;
-        abi: any;
-        functionName: string;
-        args: any[];
-        value?: string;
-        cb?: (
-            receipt: ethers.providers.TransactionReceipt,
-            setMessage: (msg: string) => void
-        ) => void;
-    }) => {
+    }: ICall) => {
         setOpen(true);
         prepareWriteContract({
             address,
@@ -95,14 +54,37 @@ export function TransactionProvider({ children }: { children: any }) {
             })
             .catch((e) => {
                 setStatus(Status.Err);
-                console.log(e);
                 setError(JSON.stringify(e.reason));
             });
     };
 
+    const multicall = (calls: ICall[]) => {
+        setOpen(true);
+        Promise.all(calls.map((call) => (
+            prepareWriteContract({
+                address: call.address,
+                abi: call.abi,
+                functionName: call.functionName,
+                args: call.args,
+            })
+        ))).then((configs) => {
+            setStatus(Status.Loading);
+            return Promise.all(configs.map(writeContract));
+        }).then((results) => {
+            setHash(results[0].hash);
+            return Promise.all(results.map(({ wait }) => wait(1)));
+        }).then((_receipts) => {
+            trigger();
+            setStatus(Status.Ok);
+        }).catch((e) => {
+            setStatus(Status.Err);
+            setError(JSON.stringify(e.reason));
+        })
+    }
+
     return (
         <TransactionContext.Provider
-            value={{ open, status, setOpen, hash, error, message, wrap }}
+            value={{ open, status, setOpen, hash, error, message, wrap, multicall }}
         >
             <TransactionModal />
             {children}
