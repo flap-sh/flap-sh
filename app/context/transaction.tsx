@@ -8,6 +8,7 @@ export const TransactionContext = createContext<ITransactionContext>({
     open: false,
     setOpen: () => { },
     status: Status.Loading,
+    setStatus: () => { },
     hash: undefined,
     error: undefined,
     message: undefined,
@@ -84,7 +85,7 @@ export function TransactionProvider({ children }: { children: any }) {
 
     return (
         <TransactionContext.Provider
-            value={{ open, status, setOpen, hash, error, message, wrap, multicall }}
+            value={{ open, status, setStatus, setOpen, hash, error, message, wrap, multicall }}
         >
             <TransactionModal />
             {children}
