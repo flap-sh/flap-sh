@@ -37,7 +37,7 @@ const resolveModalData = (
 
 // TODO: deduplicate with modal in page create
 export default function TransactionModal() {
-    const { open, setOpen, status, error, message } =
+    const { open, setOpen, status, setStatus, error, message } =
         useContext(TransactionContext);
     const [data, setData] = useState<ModalData>(
         resolveModalData(status, message, error)
@@ -49,7 +49,14 @@ export default function TransactionModal() {
 
     return (
         <Transition.Root show={open} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={setOpen}>
+            <Dialog as="div" className="relative z-10" onClose={() => {
+                setOpen(false);
+                setStatus(Status.Loading);
+                setData({
+                    title: "Sending transaction...",
+                    message: "",
+                });
+            }}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"

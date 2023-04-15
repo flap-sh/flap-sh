@@ -7,6 +7,10 @@ import CreateOrder from "./modal";
 import { IOrder } from "@/interfaces";
 import { useCreatePool } from "@/hooks/useFactory";
 
+const fixed = (value: number) => {
+    return (Math.round(value * 100) / 100).toFixed(2);
+};
+
 export default function Create() {
     const [orders, setOrders] = useState<IOrder[]>([]);
     const { create } = useCreatePool(orders);
@@ -48,7 +52,7 @@ export default function Create() {
                     The keepers will be rewarded with ETH from the fees of the pool.
                 </span>
                 <div className="flex flex-row align-center pb-8 pt-10">
-                    <div className="text-2xl pr-3">Create Order</div>
+                    <div className="text-2xl pr-3">Create Orders</div>
                     <CreateOrder orders={orders} insertOrder={insertOrder} />
                 </div>
             </div>
@@ -96,7 +100,7 @@ export default function Create() {
                 className={"pt-12 flex flex-row items-end justify-between pl-3 pr-10" + (orders.length === 0 ? " hidden" : "")}
             >
                 <div>
-                    <div>Mint Price: {price}</div>
+                    <div>Mint Price: {fixed(price)}</div>
                     <div>Total Supply: {count}</div>
                 </div>
                 <button className="border-2 border-sloid py-1 px-3 rounded-md" onClick={create}>
