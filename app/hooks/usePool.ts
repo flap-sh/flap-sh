@@ -1,4 +1,4 @@
-import { IPool, ICollection } from '@/interfaces'
+import { IPool, ICollection, IItem } from '@/interfaces'
 import { useEffect, useState } from 'react';
 import { readContracts, useProvider } from 'wagmi';
 import IPoolABI from "@/abi/IPool.json"
@@ -150,4 +150,37 @@ export function usePools(
     }, [addresses, collections]);
 
     return { pools }
+}
+
+export function useItems(pools: IPool[]) {
+    const [items, setItems] = useState<IItem[]>([]);
+
+    useEffect(() => {
+        Promise.all(pools.filter((pool) => (
+            Number(pool.state) < 5 && Number(pool.minted) > 0
+        )).map(async (pool: IPool) => {
+            const owners = await readContracts({
+                contracts: Array.from(Array(Number(pool.minted)).keys()).map((id) => {
+                    return {
+                        abi: IPoolABI.abi,
+                        address: pool.address as any,
+                        functionName: "ownerOf",
+                        args: [id]
+                    }
+                }),
+                allowFailure: true,
+            });
+
+            return owners.map((owner, index) => ({
+                poolId: Number(pool.id),
+                id: index,
+                owner: String(owner),
+                cost: Number(pool.price)
+            }))
+        })).then((res) => {
+            setItems(res.flat());
+        })
+    }, [pools])
+
+    return { items }
 }

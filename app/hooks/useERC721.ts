@@ -50,11 +50,3 @@ export function useCollections(createdCollections: string[]) {
 
     return { collections }
 }
-
-export function useItems(_pools: IPool[]) {
-    const [_items, _setItems] = useState<IItem[]>([]);
-
-    // TODO: batch items from pools
-
-    return { items }
-}
