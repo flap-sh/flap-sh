@@ -172,6 +172,9 @@ contract SeedProvider is ISeedProvider {
             //     MixDigest   common.Hash  [13]  => This is the randao reveal post the Merge
             //     Nonce       BlockNonce     
             //     BaseFee *big.Int    
+            //
+            // After Shanghai.... 
+            //     withdrawalsRoot   
 
             require(items[7].toUint() == 0, "difficulty should be zero");
 
