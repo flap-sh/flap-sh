@@ -2,6 +2,7 @@ import { BridgeEventEventObject } from "@tc/contracts/polygon/IPolygonZKEVMBridg
 import { IPolygonZkEVMBridge__factory } from "@tc/index";
 import { ethers } from "ethers";
 import { BridgeServiceInterface } from "./bridgeService";
+import { fastestGas } from "scripts/helper/gasPrice";
 
 
 const DURATION_ONE_MINUTE = 60 * 1000;
@@ -159,7 +160,7 @@ export class BridgeRelayer {
                             args.destinationNetwork,
                             args.destinationAddress,
                             args.amount,
-                            args.metadata);
+                            args.metadata, fastestGas);
 
                         const receipt = await tx.wait(confirmationBlocks);
                         if (receipt.status != 1) {

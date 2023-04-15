@@ -11,10 +11,15 @@ async function main() {
   const signer = getSigners();
 
 
+
   // deploy PeggedNFT Contract
-  const peggedNFT = await (await ethers.getContractFactory("PeggedNFT")).connect(signer.l2).deploy();
+  const peggedNFT = await (await ethers.getContractFactory("PeggedNFT")).connect(signer.l2).deploy({
+    gasPrice: ethers.utils.parseUnits("100", "gwei"),
+    nonce: await signer.l2.getTransactionCount("latest"),
+  });
   await peggedNFT.deployed();
   console.log(`PeggedNFT deployed to: ${peggedNFT.address}`);
+
 
 
   // we should predetermine the NFTBridgeL1 address 
