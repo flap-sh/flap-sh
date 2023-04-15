@@ -324,3 +324,55 @@ contract PoolFacetReveal is PoolBase, IPoolFacetReveal{
 
 }
 
+
+// TODO: the heavy work lies in the IPoolFacetBuyOrderBox 
+// Let's implement other facets first
+
+
+
+
+// stubs for @clearloop to test the factory 
+
+contract Pool is PoolBase{
+
+    // @copilot the fallback function for the proxy 
+    fallback() external payable {
+
+        bytes4 selector = msg.sig;
+
+        // default to the buyOrder and Box facet 
+        address facet = _facets[FacetKey.FACET_BUYORDER_BOX]; 
+
+
+        if(selector == IPoolFacetParams.initialize.selector || 
+            selector == IPoolFacetParams.params.selector){
+            facet = _facets[FacetKey.FACET_PARAMS];
+        } else if (selector == IPoolFacetReveal.onMessageReceived.selector ||
+            selector == IPoolFacetReveal.restartReveal.selector){
+            facet = _facets[FacetKey.FACET_REVEALS];
+        }
+
+        assembly {
+            // copy function selector and any arguments
+            calldatacopy(0, 0, calldatasize())
+            // execute function call using the facet
+            let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
+            // get any return value
+            returndatacopy(0, 0, returndatasize())
+            // return any return value or error back to the caller
+            switch result
+            case 0 {
+                revert(0, returndatasize())
+            }
+            default {
+                return(0, returndatasize())
+            }
+        }
+    }
+
+
+    receive() external payable{
+        revert("Pool: fallback function is not payable");
+    }
+}
+
