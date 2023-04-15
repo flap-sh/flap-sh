@@ -48,35 +48,31 @@ export default function Home() {
                     </a>
                 </div>
             </div>
-            <table className="table-auto w-full text-left">
-                <thead >
-                    <tr>
-                        <th>id</th>
-                        <th>address</th>
-                        <th>collections</th>
-                        <th>status</th>
-                        <th>price</th>
-                        <th>minted</th>
-                    </tr>
-                </thead>
-                <tbody >
-                    {data.map((d, idx) => (
-                        <tr key={idx} className="leading-10">
-                            <td>#{d.id}</td>
-                            <td>{d.address}</td>
-                            <td className="flex flex-row items-center h-10">
-                                {/* TODO: sorting */}
-                                {d.collections.map((c, idx) => (
-                                    <Image key={idx} height={20} width={20} className="mr-2" src={c.logo} alt={c.address} />
-                                ))}
-                            </td>
-                            <td>{d.status}</td>
-                            <td>{d.price}E</td>
-                            <td>{d.minted}/{d.totalSupply}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="grid grid-cols-6">
+                <span>id</span>
+                <span>address</span>
+                <span>collections</span>
+                <span>status</span>
+                <span>price</span>
+                <span>minted</span>
+            </div>
+            <div> {/* collection list */}
+                {data.map((d, idx) => (
+                    <div key={idx} className="grid grid-cols-6 leading-10">
+                        <span>#{d.id}</span>
+                        <span>{d.address}</span>
+                        <span className="flex flex-row items-center h-10">
+                            {/* TODO: sorting */}
+                            {d.collections.map((c, idx) => (
+                                <Image key={idx} height={20} width={20} className="mr-2" src={c.logo} alt={c.address} />
+                            ))}
+                        </span>
+                        <span>{d.status}</span>
+                        <span>{d.price}E</span>
+                        <span>{d.minted}/{d.totalSupply}</span>
+                    </div>
+                ))}
+            </div>
         </main>
     )
 }
