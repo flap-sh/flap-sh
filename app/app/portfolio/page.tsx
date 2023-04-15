@@ -113,6 +113,10 @@ export default function Portfolio() {
     }, [selected, activePools]);
 
     const hideToolbar = useMemo(() => {
+        if (!selected) {
+            return true
+        }
+
         return hideMint && hideRefund && hideReedem
     }, [hideMint, hideRefund, hideReedem])
 
@@ -205,11 +209,11 @@ export default function Portfolio() {
                         {items.map((item: IItem, idx: number) => (
                             <div key={idx} className="grid grid-cols-5 grid-gap-4 pt-3">
                                 <div className="text-center">
-                                    <input
+                                    {selected && <input
                                         type="checkbox"
                                         className="w-3"
                                         onChange={() => onSelect(item)}
-                                    />
+                                    />}
                                 </div>
                                 <span>#{item.poolId}</span>
                                 <span>#{item.id}</span>
