@@ -200,7 +200,7 @@ export default function Portfolio() {
                     <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
                     <span className="text-md">{estValue}&nbsp;E</span>
                     <span className="text-md">{totalCost}&nbsp;E</span>
-                    <span className="text-md text-center">{minted}</span>
+                    <span className="text-md">{minted}</span>
                 </div>
 
                 {/* List here */}
