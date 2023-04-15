@@ -5,7 +5,6 @@ import { useContext, useMemo, useState } from "react";
 import { useAccount } from "wagmi"
 import { STATES } from "@/hooks/usePool";
 
-
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.poolId === pool.id);
 };
@@ -24,15 +23,14 @@ const estimateValueForItem = (pools: IPool[], item: IItem) => {
 };
 
 export default function Portfolio() {
-    const { address: _ } = useAccount();
+    const { address } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
     const [selected, setSelected] = useState<IPool | null>(null);
     const [filter, setFilter] = useState<number>(4);
     const [selectedItems, setSelectedItems] = useState<IItem[]>([]);
 
     const walletItems = useMemo(() => {
-        // TODO: return allItems.filter((item) => item.owner === address);
-        return allItems
+        return allItems.filter((item) => item.owner === address);
     }, [allItems]);
 
     const walletPools = useMemo(() => {
@@ -91,20 +89,32 @@ export default function Portfolio() {
 
 
     const hideMint = useMemo(() => {
+        if (selected) {
+            return selected.state !== 0;
+        }
+
         return activePools.filter((pool) => pool.state === 0).length === 0
-    }, [activePools]);
+    }, [selected, activePools]);
 
     const hideRefund = useMemo(() => {
-        return activePools.filter((pool) => pool.state === 1).length === 0
-    }, [activePools]);
+        if (selected) {
+            return selected.state !== 1;
+        }
 
-    const hideClaim = useMemo(() => {
+        return activePools.filter((pool) => pool.state === 1).length === 0
+    }, [selected, activePools]);
+
+    const hideReedem = useMemo(() => {
+        if (selected) {
+            return selected.state !== 3;
+        }
+
         return activePools.filter((pool) => pool.state === 3).length === 0
-    }, [activePools]);
+    }, [selected, activePools]);
 
     const hideToolbar = useMemo(() => {
-        return hideMint && hideRefund && hideClaim;
-    }, [hideMint, hideRefund, hideClaim]);
+        return hideMint && hideRefund && hideReedem
+    }, [hideMint, hideRefund, hideReedem])
 
     const onSelect = (item: IItem) => {
         if (selectedItems.includes(item)) {
@@ -164,7 +174,7 @@ export default function Portfolio() {
                         <span className="w-20">
                             {ownedItemsForPool(pool, walletItems).length}
                         </span>
-                        <span>{STATES[pool.state]}</span>
+                        <span>{STATES[Number(pool.state)]}</span>
                     </div>
                 ))}
             </div>
@@ -228,9 +238,9 @@ export default function Portfolio() {
 
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
-                        hidden={hideClaim}
+                        hidden={hideReedem}
                     >
-                        Claim
+                        Reedem
                     </button>
                 </div>
             </div>
