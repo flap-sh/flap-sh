@@ -9,3 +9,13 @@ export interface IOrder {
     quantity: number;
     price: number;
 }
+
+export interface IPoolDetail {
+    id: number;
+    address: string;
+    orders: IOrder[];
+    status: string;
+    price: number;
+    minted: number;
+    totalSupply: number;
+}
