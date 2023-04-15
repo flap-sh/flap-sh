@@ -1,12 +1,14 @@
 import { IPool, ICollection, IItem } from '@/interfaces'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { readContracts, useProvider } from 'wagmi';
 import IPoolABI from "@/abi/IPool.json"
 import { ethers } from 'ethers';
+import { ContractsContext } from '@/context/contracts';
+import { TransactionContext } from '@/context/transaction';
 
 // const BOX_LOGO = "https://images.blur.io/_blur-prod/0xb03a572ee91aecbdfa8cef8196bf140a1e7410df/410-6f39d2441aece0db?w=64&h=64";
 //
-const BOX_LOGO = "";
+// const BOX_LOGO = "";
 
 export const STATES = [
     "Mintable",
@@ -121,7 +123,8 @@ const fetchBalance = async (provider: any, pools: IPool[]): Promise<IPool[]> => 
 
 export function usePools(
     addresses: string[],
-    collections: ICollection[]
+    collections: ICollection[],
+    trigger: boolean,
 ) {
     const [pools, setPools] = useState<IPool[]>([]);
     const provider = useProvider();
@@ -147,7 +150,7 @@ export function usePools(
 
             setPools(poolsToFetch);
         });
-    }, [addresses, collections]);
+    }, [addresses, collections, trigger]);
 
     return { pools }
 }
@@ -183,4 +186,41 @@ export function useItems(pools: IPool[]) {
     }, [pools])
 
     return { items }
+}
+
+export function usePool(address?: string) {
+    const { pools } = useContext(ContractsContext);
+    const { wrap, multicall } = useContext(TransactionContext);
+    const pool = pools.find(p => p.address === address);
+
+    const mint = useCallback(async (addressOverride?: string, priceOverride?: number) => {
+        const price = priceOverride ? priceOverride : pool?.price;
+        wrap({
+            address: addressOverride ? addressOverride : address as any,
+            abi: IPoolABI.abi,
+            functionName: "mintBox",
+            args: [],
+            value: ethers.utils.parseEther(String(price)).toString(),
+        });
+    }, [pool, address, wrap]);
+
+    const refund = useCallback(async (ids: number[], addressOverride?: string) => {
+        multicall(ids.map((id) => ({
+            address: addressOverride ? addressOverride : address as any,
+            abi: IPoolABI.abi,
+            functionName: "refund",
+            args: [id],
+        })));
+    }, [pool, address, multicall]);
+
+    const redeem = useCallback(async (ids: number[], addressOverride?: string) => {
+        multicall(ids.map((id) => ({
+            address: addressOverride ? addressOverride : address as any,
+            abi: IPoolABI.abi,
+            functionName: "redeem",
+            args: [id],
+        })));
+    }, [pool, address, multicall]);
+
+    return { mint, refund, redeem }
 }

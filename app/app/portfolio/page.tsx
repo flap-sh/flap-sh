@@ -3,7 +3,7 @@ import { ContractsContext } from "@/context/contracts";
 import { IItem, IPool } from "@/interfaces";
 import { useContext, useMemo, useState } from "react";
 import { useAccount } from "wagmi"
-import { STATES } from "@/hooks/usePool";
+import { STATES, usePool } from "@/hooks/usePool";
 
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.poolId === pool.id);
@@ -22,16 +22,21 @@ const estimateValueForItem = (pools: IPool[], item: IItem) => {
     return Number(pool.balance) / Number(pool.minted);
 };
 
+const fixed = (value: number) => {
+    return (Math.round(value * 100) / 100).toFixed(2);
+};
+
 export default function Portfolio() {
     const { address } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
     const [selected, setSelected] = useState<IPool | null>(null);
     const [filter, setFilter] = useState<number>(4);
     const [selectedItems, setSelectedItems] = useState<IItem[]>([]);
+    const { mint, refund, redeem } = usePool();
 
     const walletItems = useMemo(() => {
         return allItems.filter((item) => item.owner === address);
-    }, [allItems]);
+    }, [allItems, address]);
 
     const walletPools = useMemo(() => {
         const addrs = Array.from(new Set(walletItems.map((item) => item.poolId)));
@@ -64,11 +69,13 @@ export default function Portfolio() {
     }, [selected]);
 
     const estValue = useMemo(() => {
-        return items.reduce((acc, item) => acc + estimateValueForItem(pools, item), 0);
+        const value = items.reduce((acc, item) => acc + estimateValueForItem(pools, item), 0);
+        return (Math.round(value * 100) / 100).toFixed(2);
     }, [items, pools]);
 
     const totalCost = useMemo(() => {
-        return items.reduce((acc, item) => acc + item.cost, 0);
+        const value = items.reduce((acc, item) => acc + item.cost, 0);
+        return (Math.round(value * 100) / 100).toFixed(2);
     }, [items]);
 
     const minted = useMemo(() => {
@@ -113,8 +120,12 @@ export default function Portfolio() {
     }, [selected, activePools]);
 
     const hideToolbar = useMemo(() => {
+        if (!selected) {
+            return true
+        }
+
         return hideMint && hideRefund && hideReedem
-    }, [hideMint, hideRefund, hideReedem])
+    }, [hideMint, hideRefund, hideReedem, selected])
 
     const onSelect = (item: IItem) => {
         if (selectedItems.includes(item)) {
@@ -189,13 +200,25 @@ export default function Portfolio() {
                     <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
                     <span className="text-md">{estValue}&nbsp;E</span>
                     <span className="text-md">{totalCost}&nbsp;E</span>
-                    <span className="text-md text-center">{minted}</span>
+                    <span className="text-md">{minted}</span>
                 </div>
 
                 {/* List here */}
                 <div className="border-t border-solid">
                     <div className="grid grid-cols-5 grid-gap-4 pt-6">
-                        <span></span>
+                        <span className="text-center">
+                            {selected && selected.state !== 2 && <input
+                                type="checkbox"
+                                className="w-3"
+                                onChange={() => {
+                                    if (selectedItems.length === items.length) {
+                                        setSelectedItems([])
+                                    } else {
+                                        setSelectedItems(items)
+                                    }
+                                }}
+                            />}
+                        </span>
                         <span>Pool</span>
                         <span>Id</span>
                         <span>Cost</span>
@@ -205,16 +228,17 @@ export default function Portfolio() {
                         {items.map((item: IItem, idx: number) => (
                             <div key={idx} className="grid grid-cols-5 grid-gap-4 pt-3">
                                 <div className="text-center">
-                                    <input
+                                    {selected && selected.state !== 2 && <input
                                         type="checkbox"
                                         className="w-3"
+                                        checked={selectedItems.includes(item)}
                                         onChange={() => onSelect(item)}
-                                    />
+                                    />}
                                 </div>
                                 <span>#{item.poolId}</span>
                                 <span>#{item.id}</span>
-                                <span>{item.cost}&nbsp;E</span>
-                                <span>{estimateValueForItem(walletPools, item)}&nbsp;E</span>
+                                <span>{fixed(item.cost)}&nbsp;E</span>
+                                <span>{fixed(estimateValueForItem(walletPools, item))}&nbsp;E</span>
                             </div>
                         ))}
                     </div>
@@ -225,6 +249,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs"
                         hidden={hideMint}
+                        onClick={() => mint(selected?.address, selected?.price)}
                     >
                         Mint
                     </button>
@@ -232,6 +257,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
                         hidden={hideRefund}
+                        onClick={() => refund(selectedItems.map((i) => (i.id)), selected?.address)}
                     >
                         Refund
                     </button>
@@ -239,6 +265,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
                         hidden={hideReedem}
+                        onClick={() => redeem(selectedItems.map((i) => (i.id)), selected?.address)}
                     >
                         Reedem
                     </button>

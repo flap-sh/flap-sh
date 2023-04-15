@@ -4,7 +4,7 @@ import { Disclosure } from '@headlessui/react'
 import { IPool } from "@/interfaces"
 import { useContext } from "react";
 import { ContractsContext } from "@/context/contracts";
-import { STATES } from "@/hooks/usePool"
+import { STATES, usePool } from "@/hooks/usePool"
 
 export default function Home() {
     const { pools } = useContext(ContractsContext);
@@ -24,7 +24,7 @@ export default function Home() {
                 </div>
             </div>
             <div className="grid grid-cols-6 pb-3 font-bold">
-                <span>id</span>
+                <span className="text-center">id</span>
                 <span>address</span>
                 <span>collections</span>
                 <span>status</span>
@@ -41,11 +41,13 @@ export default function Home() {
 }
 
 function PoolItem({ detail: d }: { detail: IPool }) {
+    const { mint } = usePool(d.address);
+
     return (
         <Disclosure as="div" className="pt-3">
             <Disclosure.Button className="w-full text-left">
                 <div className="grid grid-cols-6">
-                    <span>#{d.id}</span>
+                    <span className="text-center">#{d.id}</span>
                     <span>{d.address.slice(0, 6) + "..." + d.address.slice(38, 42)}</span>
                     <span className="flex flex-row items-center">
                         {/* TODO: sorting */}
@@ -67,40 +69,46 @@ function PoolItem({ detail: d }: { detail: IPool }) {
             </Disclosure.Button>
             <Disclosure.Panel
                 as="div"
-                className="border border-solid border-gray-300 mt-5 my-3 pt-8 px-10 max-w-xl"
+                className="flex items-center w-full justify-center"
             >
-                <div className="grid grid-cols-3 text-center">
-                    <span>collection</span>
-                    <span>filled</span>
-                    <span>chance</span>
-                </div>
-                {d.orders?.map((o, idx) => (
-                    <div key={idx} className="grid grid-cols-3 pt-3 text-center">
-                        <span className="flex flex-row items-center justify-center">
-                            <Image
-                                height={15}
-                                width={15}
-                                className="mr-2"
-                                src={o.collection.logo}
-                                alt={o.collection.address}
-                            />
-                            {o.collection.name}
-                        </span>
-                        <span>5/{o.quantity}</span>
-                        <span>20%</span>
+                <div className="border border-solid border-gray-300 mt-5 my-3 pt-8 px-10 max-w-xl">
+                    <div className="grid grid-cols-5 text-center">
+                        <span className="col-span-2">collection</span>
+                        <span>address</span>
+                        <span>filled</span>
+                        <span>chance</span>
                     </div>
-                ))}
+                    {d.orders?.map((o, idx) => (
+                        <div key={idx} className="grid grid-cols-5 pt-3 text-center">
+                            <span className="flex flex-row items-center justify-center col-span-2">
+                                <Image
+                                    height={15}
+                                    width={15}
+                                    className="mr-2"
+                                    src={o.collection.logo}
+                                    alt={o.collection.address}
+                                />
+                                {o.collection.name}
+                            </span>
+                            <span>{o.collection.address?.slice(0, 6)}...{o.collection.address?.slice(38, 42)}</span>
+                            <span>0/{o.quantity}</span>
+                            <span>20%</span>
+                        </div>
+                    ))}
 
-                {/* tools */}
-                <div className="w-full text-right">
-                    <div className="max-w-xl mt-5 p-3 py-5 border-t border-solid border-gray-300">
-                        <button className="border border-solid border-gray-300 py-1 px-3 text-sm">
-                            mint
-                        </button>
+                    {/* tools */}
+                    <div className="w-full text-right">
+                        <div className="max-w-xl mt-5 p-3 py-5 border-t border-solid border-gray-300">
+                            <button
+                                className="border border-solid border-gray-300 py-1 px-3 text-sm"
+                                onClick={() => mint()}
+                            >
+                                mint
+                            </button>
+                        </div>
                     </div>
                 </div>
             </Disclosure.Panel>
         </Disclosure>
     )
-
 }
