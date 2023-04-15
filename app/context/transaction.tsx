@@ -29,7 +29,7 @@ export interface ITransactionContext {
         functionName: string;
         args: any[];
         value?: string;
-        cb: (
+        cb?: (
             receipt: ethers.providers.TransactionReceipt,
             setMessage: (msg: string) => void
         ) => void;
@@ -67,7 +67,7 @@ export function TransactionProvider({ children }: { children: any }) {
         functionName: string;
         args: any[];
         value?: string;
-        cb: (
+        cb?: (
             receipt: ethers.providers.TransactionReceipt,
             setMessage: (msg: string) => void
         ) => void;

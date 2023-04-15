@@ -1,12 +1,14 @@
 import { IPool, ICollection, IItem } from '@/interfaces'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { readContracts, useProvider } from 'wagmi';
 import IPoolABI from "@/abi/IPool.json"
 import { ethers } from 'ethers';
+import { ContractsContext } from '@/context/contracts';
+import { TransactionContext } from '@/context/transaction';
 
 // const BOX_LOGO = "https://images.blur.io/_blur-prod/0xb03a572ee91aecbdfa8cef8196bf140a1e7410df/410-6f39d2441aece0db?w=64&h=64";
 //
-const BOX_LOGO = "";
+// const BOX_LOGO = "";
 
 export const STATES = [
     "Mintable",
@@ -183,4 +185,39 @@ export function useItems(pools: IPool[]) {
     }, [pools])
 
     return { items }
+}
+
+export function usePool(address: string) {
+    const { pools } = useContext(ContractsContext);
+    const { wrap } = useContext(TransactionContext);
+    const pool = pools.find(p => p.address === address);
+
+    const mint = useCallback(async () => {
+        wrap({
+            address: address as any,
+            abi: IPoolABI.abi,
+            functionName: "mintBox",
+            value: ethers.utils.parseUnits(String(pool?.price?.toString()), "ether").toString(),
+        });
+    }, [pool, address, wrap]);
+
+    const refund = useCallback(async (id: number) => {
+        wrap({
+            address: address as any,
+            abi: IPoolABI.abi,
+            functionName: "refund",
+            args: [id],
+        });
+    }, [pool, address, wrap]);
+
+    const redeem = useCallback(async (id: number) => {
+        wrap({
+            address: address as any,
+            abi: IPoolABI.abi,
+            functionName: "refund",
+            args: [id],
+        });
+    }, [pool, address, wrap]);
+
+    return { mint, refund, redeem }
 }

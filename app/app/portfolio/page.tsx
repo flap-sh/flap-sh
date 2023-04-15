@@ -31,7 +31,7 @@ export default function Portfolio() {
 
     const walletItems = useMemo(() => {
         return allItems.filter((item) => item.owner === address);
-    }, [allItems]);
+    }, [allItems, address]);
 
     const walletPools = useMemo(() => {
         const addrs = Array.from(new Set(walletItems.map((item) => item.poolId)));
