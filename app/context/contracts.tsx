@@ -19,8 +19,7 @@ export const ContractsContext = createContext<IContractsContext>({
 });
 
 export function ContractsProvider({ children }: { children: React.ReactNode }) {
-    const factory = "0x000";
-
+    const factory = "0x8B8AC8377538502902Feedda53D1d1d30518215e";
     const { createdPools, wlCollections } = useFactory(factory);
     const { collections } = useCollections(wlCollections);
     const { pools } = usePools(createdPools, collections);
