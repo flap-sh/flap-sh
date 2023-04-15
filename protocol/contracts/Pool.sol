@@ -79,6 +79,12 @@ abstract contract PoolBase is
     /// @dev the seed to shuffle the buy orders when the pool is in STATE_REDEEMABLE state
     bytes32 internal _seed;
 
+    /// @dev is the creator fee already paid or not
+    uint64 internal _creatorFeePaid;
+
+    /// @dev is the treasury fee already paid or not
+    uint64 internal _treasuryFeePaid;
+
     /// @dev orderFilledInfo
     struct OrderFilledInfo {
         uint64 filled; // is the order filled or not
@@ -125,6 +131,40 @@ abstract contract PoolBase is
     // TODO: remove this function
     function _getBlockTimeStamp() internal view virtual returns (uint256) {
         return block.timestamp;
+    }
+
+
+    // Because it is shared by multiple functions, we put it in the base 
+    // The _transitState() function to transit the state of the pool
+    function _transitState()internal{
+
+        while(true){
+            PoolState lastState = _poolState; 
+
+           if (_poolState == PoolState.STATE_MINTABLE) {
+
+                if(_currentSupply == _maxSupply) {
+                    _poolState = PoolState.STATE_REVEALABLE;
+
+                    emit StateTransited(
+                        PoolState.STATE_MINTABLE,
+                        PoolState.STATE_REVEALABLE
+                    );
+                }else if (_getBlockTimeStamp() >= _mintEndTime) {
+                        // if the pool is not fully minted, we will refund the users
+                        _poolState = PoolState.STATE_REFUNDABLE;
+
+                        emit StateTransited(
+                            PoolState.STATE_MINTABLE,
+                            PoolState.STATE_REFUNDABLE
+                        );
+                } 
+            }
+
+            if(lastState == _poolState){
+                break;
+            }
+        } // end while
     }
     
 
@@ -180,7 +220,7 @@ contract PoolFacetParams is PoolBase, IPoolFacetParams {
 
         // TODO: If it takes too long for the tx to be included, 
         //       it may be timeout after initializtion.
-        // _transitState();
+        _transitState();
         
     }
 
@@ -373,6 +413,341 @@ contract Pool is PoolBase{
 
     receive() external payable{
         revert("Pool: fallback function is not payable");
+    }
+}
+
+
+
+
+
+// finnally, the most heavy works here... 
+
+contract PoolFacetBuyOrder is PoolBase, IPoolFacetBuyOrderBox {
+    /// @return the price of each box
+    function mintPrice() public view override returns (uint256) {
+        (uint count, uint total) = _buyOrderTotalCountAndValue();
+
+        // plus fee
+        total += MathUpgradeable.mulDiv(
+            total,
+            _feeRate,
+            10000,
+            MathUpgradeable.Rounding.Up // rounding up
+        );
+
+        return MathUpgradeable.ceilDiv(total, count);
+    }
+
+    /// @dev This returns the cached state (prefered to use the alternative pollState() function)
+    /// @return the cached state of the pool
+    function poolCachedState() public view override returns (PoolState) {
+        return _poolState;
+    }
+
+    function totalSupply() public view override returns (uint256) {
+        return _maxSupply;
+    }
+
+    function currentSupply() public view override returns (uint256) {
+        return _currentSupply;
+    }
+
+
+    /// @dev The state may change when you call this function.
+    /// @return the state of the pool
+    function poolState() public returns (PoolState) {
+        // we have two time-dependent state transitions:
+        //  1. STATE_CREATED -> STATE_MINTABLE
+        //  2. STATE_MINTABLE -> STATE_REFUNDABLE
+        _transitState();
+        return _poolState;
+    }
+
+    /// @notice mint a box
+    /// @dev  - can only be called when the pool is in STATE_MINTABLE
+    ///       - msg.value must be gt or eq to mintPrice()
+    function mintBox() external payable override {
+        // TODO: cache price to save gas
+        (PoolState state, uint256 price) = (poolState(), mintPrice());
+
+        require(
+            state == PoolState.STATE_MINTABLE,
+            "Pool: pool is not in STATE_MINTABLE"
+        );
+        require(
+            msg.value >= price,
+            "Pool: msg.value is less than mintPrice()"
+        );
+        require(_currentSupply < _maxSupply, "Pool: no more boxs left");
+
+        // TODO: reentrancy attack analysis ???
+
+        // mint the box
+        _safeMint(msg.sender, _currentSupply++);
+
+        if (msg.value > price) {
+            // refund the extra ethers
+            payable(msg.sender).transfer(msg.value - price);
+        }
+
+        // possible transition to  STATE_REVEALABLE state
+        if (_currentSupply == _maxSupply) {
+            poolState();
+        }
+    }
+
+    /// @notice get a "buy order"
+    /// @param _buyOrderID - the ID of the buy order
+    function getNFTBuyOrder(
+        uint256 _buyOrderID
+    ) public view returns (NFTBuyorder memory) {
+        uint256 idIter = 0;
+
+        for (uint256 i = 0; i < _buyOrdersInternal.length; i++) {
+            NFTOrderBatch storage o = _buyOrdersInternal[i];
+
+            idIter += o.count;
+
+            if (_buyOrderID < idIter) {
+                // get the filling state of the order
+                OrderFilledInfo memory info = _orderFilledInfos[_buyOrderID];
+
+                return
+                    NFTBuyorder({
+                        collection: o.collection,
+                        price: o.price,
+                        filled: info.filled,
+                        tokenID: info.tokenID,
+                        redeemed: info.redeemed
+                    });
+            }
+        }
+
+        revert("invalid buyOrder id");
+    }
+
+    /// @dev - can only be called when the pool is in STATE_REDEEMABLE
+    ///
+    /// @param _boxID - the ID of the box
+    /// @return the NFTBuyorder in the box
+    function getRevealedBox(
+        uint256 _boxID
+    ) public view override returns (NFTBuyorder memory) {
+        
+        (NFTBuyorder memory order,)= _getRevealedBox(_boxID);
+
+        return order;
+    }
+
+    /// @notice take a "buy order"
+    /// @dev  - can only be called when the pool is in STATE_REDEEMABLE or STATE_REVEALABLE
+    /// @param orderID The id of the buy order to fill
+    /// @param tokenID The id of the NFT selling to the pool
+    function fillOrder(uint256 orderID, uint256 tokenID) external override {
+        // current implementation only accepts a tokenID being less than 2^128
+        require(tokenID < 2 ** 128, "Pool: tokenID is too large");
+
+        // we intentionally use the cached state here
+        require(
+            poolCachedState() == PoolState.STATE_REDEEMABLE ||
+                poolCachedState() == PoolState.STATE_REVEALABLE,
+            "Pool: pool is not in STATE_REDEEMABLE or STATE_REVEALABLE"
+        );
+
+
+        // get order info
+        NFTBuyorder memory order = getNFTBuyOrder(orderID);
+
+        require(order.filled == 0, "Pool: order is already filled");
+        require(order.redeemed == 0, "Pool: order is already redeemed");
+
+        // transfer the NFT to the pool
+        IERC721MetadataUpgradeable(order.collection).safeTransferFrom(
+            msg.sender,
+            address(this),
+            tokenID
+        );
+
+        // TODO: is it necessary to check the ownership of the NFT?
+
+        // update the order info
+        _orderFilledInfos[orderID] = OrderFilledInfo({
+            filled: 1,
+            redeemed: 0,
+            tokenID: uint128(tokenID)
+        });
+
+        // send the ethers to the seller 
+        AddressUpgradeable.sendValue(payable(msg.sender), order.price);
+    }
+
+
+    /// @dev Treasury claims its fee
+    ///      this function can only be called when the pool is in STATE_REDEEMABLE
+    function claimTreasuryFee() external override onlyOwner {
+        require(
+            poolCachedState() == PoolState.STATE_REDEEMABLE,
+            "Pool: pool is not in STATE_REDEEMABLE"
+        );
+        require(
+            _treasuryFeePaid != FEE_PAID,
+            "Pool: treasury fee is already paid"
+        );
+
+        _treasuryFeePaid = FEE_PAID;
+
+        (, uint treasuryFee) = _protocolFees();
+
+        AddressUpgradeable.sendValue(payable(msg.sender), treasuryFee);
+    }
+
+    /// @dev The creator claims its fee.
+    ///      this function can only be called when the pool is in STATE_REDEEMABLE
+    function claimCreatorFee() external override {
+        require(
+            msg.sender == _creator,
+            "Pool: only creator can call this function"
+        );
+        require(
+            poolCachedState() == PoolState.STATE_REDEEMABLE,
+            "Pool: pool is not in STATE_REDEEMABLE"
+        );
+        require(
+            _creatorFeePaid != FEE_PAID,
+            "Pool: creator fee is already paid"
+        );
+
+        _creatorFeePaid = FEE_PAID;
+
+        (uint creatorFee, uint treasuryFee) = _protocolFees();
+
+        AddressUpgradeable.sendValue(payable(msg.sender), creatorFee);
+
+        // add claimTreasuryFee() to mitigate possible dos here.
+        if (_treasuryFeePaid != FEE_PAID) {
+            _treasuryFeePaid = FEE_PAID;
+            AddressUpgradeable.sendValue(payable(owner()), treasuryFee);
+        }
+    }
+
+    ///      this function can only be called when the pool is in STATE_REDEEMABLE
+    /// @param _boxID - the ID of the box to redeem
+    function redeem(uint256 _boxID) external override {
+        require(
+            poolCachedState() == PoolState.STATE_REDEEMABLE,
+            "Pool: pool is not in STATE_REDEEMABLE"
+        );
+        require(
+            ERC721Upgradeable._isApprovedOrOwner(msg.sender, _boxID),
+            "Pool: caller is not the owner of the box"
+        );
+
+        _burn(_boxID);
+
+        (NFTBuyorder memory order, uint256 orderID) = _getRevealedBox(_boxID);
+
+        // update the order info
+        _orderFilledInfos[orderID].redeemed = 1;
+
+        if (order.filled == 1) {
+            // transfer the NFT to the box owner
+            IERC721MetadataUpgradeable(order.collection).safeTransferFrom(
+                address(this),
+                msg.sender,
+                order.tokenID
+            );
+        } else {
+            // transfer the ether to the box owner
+            AddressUpgradeable.sendValue(payable(msg.sender), order.price);
+        }
+
+        emit BoxRedeemed(_boxID, msg.sender);
+    }
+
+    /// @dev refund the ethers by burning the box
+    ///       this function can only be called when the pool is in STATE_REFUNDABLE
+    /// @param _boxID - the ID of the box to refund
+    function refund(uint256 _boxID) external override {
+        require(
+            poolState() == PoolState.STATE_REFUNDABLE,
+            "Pool: pool is not in STATE_REFUNDABLE"
+        );
+        require(
+            ERC721Upgradeable._isApprovedOrOwner(msg.sender, _boxID),
+            "Pool: caller is not the owner of the box"
+        );
+
+        _burn(_boxID);
+
+        // transfer the ether to the box owner
+        AddressUpgradeable.sendValue(payable(msg.sender), mintPrice());
+
+        emit BoxRefunded(_boxID, msg.sender);
+    }
+
+
+    ///
+    /// @return count   - the total number of buyOrders in the pool
+    /// @return value   - the total value of buyOrders in the pool  (excluding the protocol fee)
+    function _buyOrderTotalCountAndValue()
+        internal
+        view
+        returns (uint256 count, uint256 value)
+    {
+        for (uint256 i = 0; i < _buyOrdersInternal.length; i++) {
+            NFTOrderBatch storage o = _buyOrdersInternal[i];
+
+            value += o.price * o.count;
+            count += o.count;
+        }
+
+        return (count, value);
+    }
+
+    /// @dev calculate the protocol fees distributed to the protocol fee receivers
+    function _protocolFees()
+        internal
+        view
+        returns (uint256 creatorFee, uint256 treasuryFee)
+    {
+        // unit price + fee
+        uint256 price = mintPrice();
+
+        // total number of buy orders
+        // total value of buy orders (excluding the protocol fee)
+        (
+            uint256 count,
+            uint256 valueWithoutFee
+        ) = _buyOrderTotalCountAndValue();
+
+        // total fee
+        uint256 fee = price * count - valueWithoutFee;
+
+        // fee to the creator
+        creatorFee = (fee * _creatorFeeShare) / 10000;
+
+        // fee to the protocol Treasury
+        treasuryFee = fee - creatorFee;
+    }
+
+
+    function _getRevealedBox(
+        uint256 _boxID
+    ) internal view returns (NFTBuyorder memory, uint orderID) {
+        // we intentionally use the cached state here
+        require(
+            poolCachedState() == PoolState.STATE_REDEEMABLE,
+            "Pool: pool is not in STATE_REDMEEMABLE"
+        );
+        require(_boxID < _currentSupply, "Pool: boxID is invalid");
+
+        orderID = ShuffleLib.computeShuffledIndex(
+            _boxID,
+            _currentSupply,
+            _seed
+        );
+
+        return (getNFTBuyOrder(orderID),orderID);
     }
 }
 
