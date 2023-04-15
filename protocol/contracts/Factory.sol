@@ -161,6 +161,11 @@ contract Factory is IPoolFactory, Ownable {
 
     }
 
+    /// @dev only the owner can set the seed provider 
+    function setSeedProvider(address _seedProvider) external onlyOwner{
+        _L1SeedProvider = _seedProvider;
+    }
+
     /// @dev only the DAO can add or remove collections from the whitelist
     function removeCollectionFromWhitelist(address _collection) external onlyOwner{
             

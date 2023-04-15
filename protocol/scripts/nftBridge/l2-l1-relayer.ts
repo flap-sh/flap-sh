@@ -5,6 +5,7 @@ import { BridgeRelayer } from "scripts/polygon/bridgeRelayer";
 import { BridgeService, BridgeServiceType } from "scripts/polygon/bridgeService";
 import { ZKEVM_BRIDGE_ADDRESS } from "scripts/polygon/constants";
 import dotenv from "dotenv";
+import { ADDR_NFTBRIDGE_L2 } from "scripts/deployed";
 
 
 dotenv.config();
@@ -27,7 +28,8 @@ async function main(){
         bridgeService: new BridgeService(BridgeServiceType.TESTNET),
         log: console.log,
         lastBlock: 583797,
-        filter: (o:BridgeEventEventObject) => o.originAddress.toLowerCase() == "0xE3091BcA4ff306b6848594CA51e41EEcC381F3E0".toLowerCase()
+        confirmationBlocks: 3, 
+        filter: (o:BridgeEventEventObject) => o.originAddress.toLowerCase() == ADDR_NFTBRIDGE_L2.toLowerCase()
     });
 
     await relayer.run();
