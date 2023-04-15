@@ -2,9 +2,9 @@
 import { ContractsContext } from "@/context/contracts";
 import { IItem, IPool } from "@/interfaces";
 import { useContext, useMemo, useState } from "react";
-/* page portfolio */
-
 import { useAccount } from "wagmi"
+import { STATES } from "@/hooks/usePool";
+
 
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.collection.address === pool.address);
@@ -14,10 +14,10 @@ export default function Portfolio() {
     const { address } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
     const [selected, _setSelected] = useState<IPool | null>(null);
-    const [filter, _setFilter] = useState<number | null>(null);
+    const [filter, setFilter] = useState<number>(4);
 
     const pools = useMemo(() => {
-        if (filter) {
+        if (filter !== 4) {
             return allPools.filter((pool) => pool.state === filter);
         }
 
@@ -70,24 +70,39 @@ export default function Portfolio() {
                 <span
                     className="border-x border-solid border-gray-300 px-6 py-2 w-full inline-block"
                 >
-                    switch input here (status)
+                    <div className="space-y-1">
+                        {Object.values(STATES).map((state: string, idx: number) => (
+                            <div key={idx} className="flex items-center">
+                                <input
+                                    id={state.toString()}
+                                    type="radio"
+                                    checked={filter === idx}
+                                    onChange={() => setFilter(idx)}
+                                    className="h-3 w-3 border-gray-300 text-gray-300 focus:text-gray-300"
+                                />
+                                <label htmlFor={state} className="ml-3 block text-sm font-medium leading-6 text-gray-300">
+                                    {state}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
                 </span>
                 {/* pool list */}
                 <div className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10">
                     {/* table head */}
-                    <span className="w-10">id</span>
-                    <span className="w-20">owned</span>
-                    <span className="">state</span>
+                    <span className="w-10">Id</span>
+                    <span className="w-20">Owned</span>
+                    <span className="">State</span>
 
                 </div>
                 {/* items */}
-                {pools.map((pool: IPool) => (
-                    <div className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10">
+                {pools.map((pool: IPool, idx: number) => (
+                    <div key={idx} className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10">
                         <span className="w-10">{pool.id}</span>
                         <span className="w-20">
                             {ownedItemsForPool(pool, walletItems).length}
                         </span>
-                        <span>{pool.state}</span>
+                        <span>{STATES[pool.state]}</span>
                     </div>
                 ))}
             </div>
