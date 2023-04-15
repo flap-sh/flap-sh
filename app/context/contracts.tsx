@@ -18,7 +18,6 @@ export const ContractsContext = createContext<IContractsContext>({
     items: []
 });
 
-
 export function ContractsProvider({ children }: { children: React.ReactNode }) {
     const factory = "0x000";
 
