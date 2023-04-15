@@ -38,7 +38,6 @@ interface IPoolTypes {
         address protocolTreasury; // the address of the protocol treasury
         address bridge; // the address of the polygon zkevm bridge
         address seedProvider; // the address of the seed provider 
-        address boxDescriptor; // the address of the box descriptor contract  
     }
 
     /// @notice a "buy order"
@@ -48,6 +47,15 @@ interface IPoolTypes {
         uint256 filled; // is the order filled or not
         uint256 tokenID; // the token ID of the bought NFT if the order is filled
         uint256 redeemed; // is the box containing the buyOrder redeemed or not
+    }
+
+
+    /// @notice give each facet a unique identifier
+    enum FacetKey{
+        FACET_ENTRY_POINT,
+        FACET_PARAMS,
+        FACET_REVEALS,
+        FACET_BUYORDER_BOX 
     }
 
 }
