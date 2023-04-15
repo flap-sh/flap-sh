@@ -39,4 +39,5 @@ export interface IContractsContext {
     pools: IPool[];
     /// all items in this protocol.
     items: IItem[];
+    trigger: () => void;
 }

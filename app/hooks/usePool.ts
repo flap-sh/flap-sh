@@ -123,7 +123,8 @@ const fetchBalance = async (provider: any, pools: IPool[]): Promise<IPool[]> => 
 
 export function usePools(
     addresses: string[],
-    collections: ICollection[]
+    collections: ICollection[],
+    trigger: boolean,
 ) {
     const [pools, setPools] = useState<IPool[]>([]);
     const provider = useProvider();
@@ -149,7 +150,7 @@ export function usePools(
 
             setPools(poolsToFetch);
         });
-    }, [addresses, collections]);
+    }, [addresses, collections, trigger]);
 
     return { pools }
 }
@@ -192,11 +193,13 @@ export function usePool(address: string) {
     const { wrap } = useContext(TransactionContext);
     const pool = pools.find(p => p.address === address);
 
+
     const mint = useCallback(async () => {
         wrap({
             address: address as any,
             abi: IPoolABI.abi,
             functionName: "mintBox",
+            args: [],
             value: ethers.utils.parseUnits(String(pool?.price?.toString()), "ether").toString(),
         });
     }, [pool, address, wrap]);

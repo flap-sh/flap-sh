@@ -4,7 +4,7 @@ import { Disclosure } from '@headlessui/react'
 import { IPool } from "@/interfaces"
 import { useContext } from "react";
 import { ContractsContext } from "@/context/contracts";
-import { STATES } from "@/hooks/usePool"
+import { STATES, usePool } from "@/hooks/usePool"
 
 export default function Home() {
     const { pools } = useContext(ContractsContext);
@@ -41,6 +41,8 @@ export default function Home() {
 }
 
 function PoolItem({ detail: d }: { detail: IPool }) {
+    const { mint } = usePool(d.address);
+
     return (
         <Disclosure as="div" className="pt-3">
             <Disclosure.Button className="w-full text-left">
@@ -94,7 +96,10 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                 {/* tools */}
                 <div className="w-full text-right">
                     <div className="max-w-xl mt-5 p-3 py-5 border-t border-solid border-gray-300">
-                        <button className="border border-solid border-gray-300 py-1 px-3 text-sm">
+                        <button
+                            className="border border-solid border-gray-300 py-1 px-3 text-sm"
+                            onClick={mint}
+                        >
                             mint
                         </button>
                     </div>

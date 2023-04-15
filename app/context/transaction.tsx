@@ -1,8 +1,9 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useChainId } from "wagmi";
 import { ethers } from "ethers";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import TransactionModal from "@/components/Transaction";
+import { ContractsContext } from "./contracts";
 
 export enum Status {
     Ok,
@@ -47,12 +48,12 @@ export const TransactionContext = createContext<ITransactionContext>({
 });
 
 export function TransactionProvider({ children }: { children: any }) {
-    const chainId = useChainId();
     const [status, setStatus] = useState(Status.Loading);
     const [open, setOpen] = useState(false);
     const [hash, setHash] = useState<string>();
     const [error, setError] = useState<string>();
     const [message, setMessage] = useState<string>();
+    const { trigger } = useContext(ContractsContext);
 
     const wrap = ({
         address,
@@ -86,9 +87,10 @@ export function TransactionProvider({ children }: { children: any }) {
             })
             .then(({ hash, wait }) => {
                 setHash(hash);
-                return wait(chainId === 2337 ? 1 : 6);
+                return wait(1);
             })
             .then((receipt) => {
+                trigger();
                 cb && cb(receipt, setMessage)
                 setStatus(Status.Ok);
             })
