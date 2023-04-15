@@ -7,6 +7,9 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { ICollection } from "@/interfaces";
 import { useState, useEffect, Fragment } from "react";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBroom } from "@fortawesome/free-solid-svg-icons";
+import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 
 export function CountInput({
     count,
@@ -26,7 +29,7 @@ export function CountInput({
             <div className="relative mt-2 rounded-md shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <span className="text-gray-500 sm:text-sm">
-                        #
+                        <FontAwesomeIcon icon={faBroom} />
                     </span>
                 </div>
                 <input
@@ -69,7 +72,7 @@ export function PriceInput({
             <div className="relative mt-2 rounded-md shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <span className="text-gray-500 sm:text-sm">
-                        E
+                        <FontAwesomeIcon icon={faEthereum} />
                     </span>
                 </div>
                 <input
@@ -84,7 +87,7 @@ export function PriceInput({
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <span className="text-gray-500 sm:text-sm" id="price-currency">
-                        E
+
                     </span>
                 </div>
             </div>

@@ -6,6 +6,8 @@ import { useMemo, useState } from "react";
 import CreateOrder from "./modal";
 import { IOrder } from "@/interfaces";
 import { useCreatePool } from "@/hooks/useFactory";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 
 const fixed = (value: number) => {
     return (Math.round(value * 100) / 100).toFixed(2);
@@ -45,7 +47,7 @@ export default function Create() {
                     be any of the collections in the pool, it&quot;s randomly.
 
                     <br /><br />
-                    Get NFT or ETH after revealing depends on if the pool is filled up or not,
+                    Get NFT or <FontAwesomeIcon icon={faEthereum} spin /> after revealing depends on if the pool is filled up or not,
                     for filling up the pool, we will provide scripts for people to do it, which
                     are called <b>keeprs</b> in flap.sh.
 

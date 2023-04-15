@@ -5,7 +5,9 @@ import { Fragment, useState, useMemo, useContext } from "react";
 import { IOrder, ICollection } from "@/interfaces";
 import { CountInput, PriceInput, CollectionInput } from "./inputs";
 import { ContractsContext } from "@/context/contracts";
-
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 /**
  *  Create order
  */
@@ -84,7 +86,7 @@ export default function CreateOrder({
         <>
 
             <button onClick={openModal} className="w-5 hover:cursor-pointer">
-                +
+                <FontAwesomeIcon icon={faPlus} />
             </button>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -152,7 +154,7 @@ export default function CreateOrder({
                                             </button>
                                         </div>
                                         <div className="pr-1">
-                                            <span>Total Amount: {totalAmount}&nbsp;E</span>
+                                            <span>Total Amount: <FontAwesomeIcon icon={faEthereum} /> {totalAmount}</span>
                                         </div>
                                     </div>
                                 </Dialog.Panel>

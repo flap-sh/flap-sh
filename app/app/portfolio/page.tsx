@@ -4,6 +4,8 @@ import { IItem, IPool } from "@/interfaces";
 import { useContext, useMemo, useState } from "react";
 import { useAccount } from "wagmi"
 import { STATES, usePool } from "@/hooks/usePool";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.poolId === pool.id);
@@ -198,8 +200,8 @@ export default function Portfolio() {
                     <span className="text-sm">Cost</span>
                     <span className="text-sm">Minted</span>
                     <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
-                    <span className="text-md">{estValue}&nbsp;E</span>
-                    <span className="text-md">{totalCost}&nbsp;E</span>
+                    <span className="text-md"><FontAwesomeIcon icon={faEthereum} /> {estValue}</span>
+                    <span className="text-md"><FontAwesomeIcon icon={faEthereum} /> {totalCost}</span>
                     <span className="text-md">{minted}</span>
                 </div>
 
@@ -237,8 +239,8 @@ export default function Portfolio() {
                                 </div>
                                 <span>#{item.poolId}</span>
                                 <span>#{item.id}</span>
-                                <span>{fixed(item.cost)}&nbsp;E</span>
-                                <span>{fixed(estimateValueForItem(walletPools, item))}&nbsp;E</span>
+                                <span><FontAwesomeIcon icon={faEthereum} /> {fixed(item.cost)}</span>
+                                <span><FontAwesomeIcon icon={faEthereum} /> {fixed(estimateValueForItem(walletPools, item))}</span>
                             </div>
                         ))}
                     </div>
