@@ -52,6 +52,7 @@ export interface ITransactionContext {
     open: boolean;
     setOpen: (open: boolean) => void;
     status: Status;
+    setStatus: (status: Status) => void;
     hash: string | undefined;
     error: string | undefined;
     message: string | undefined;

@@ -120,7 +120,7 @@ export default function CreateOrder({
                                         as="h3"
                                         className="text-lg font-medium leading-6 text-gray-100"
                                     >
-                                        Create Order
+                                        Create Orders
                                     </Dialog.Title>
                                     <div className="mt-6 mb-10">
                                         <CollectionInput
