@@ -16,6 +16,7 @@ export const pools = [{
     status: "Mintable",
     price: 0.5,
     minted: 10,
+    currentSupply: 20,
     totalSupply: 100,
     orders,
 }];
@@ -23,5 +24,6 @@ export const pools = [{
 export const items = [{
     collection: collections[0],
     id: 0,
-    owner: "0x000"
+    owner: "0x000",
+    cost: 0.08
 }];

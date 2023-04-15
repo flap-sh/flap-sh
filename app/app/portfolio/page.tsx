@@ -1,6 +1,52 @@
+"use client"
+import { ContractsContext } from "@/context/contracts";
+import { IItem, IPool } from "@/interfaces";
+import { useContext, useMemo, useState } from "react";
 /* page portfolio */
 
+import { useAccount } from "wagmi"
+
 export default function Portfolio() {
+    const { address } = useAccount();
+    const { pools: _pools, items: allItems } = useContext(ContractsContext);
+    const [selected, _setSelected] = useState<IPool | null>(null);
+
+    const items = useMemo(() => {
+        // TODO: on testnet
+        // const myItems = allItems.filter((item) => item.owner === address);
+        const myItems = allItems;
+
+        if (selected) {
+            return myItems.filter((item) => item.collection.address === selected.address);
+        }
+
+        return myItems
+    }, [selected, allItems, address]);
+
+    const hideToolbar = useMemo(() => {
+        return selected === null;
+    }, [selected]);
+
+    const title = useMemo(() => {
+        if (selected) {
+            return `Pool#${selected.id}`;
+        }
+
+        return "All items";
+    }, [selected]);
+
+    const totalCost = useMemo(() => {
+        return items.reduce((acc, item) => acc + item.cost, 0);
+    }, [items]);
+
+    const currentSupply = useMemo(() => {
+        if (selected) {
+            return selected.currentSupply + "/" + selected.totalSupply;
+        }
+
+        return items.length + "/" + items.length;
+    }, [items]);
+
     return (
         <main className="grid grid-cols-12">
             <div className="col-span-4">
@@ -26,16 +72,16 @@ export default function Portfolio() {
             </div>
 
             {/* collection info */}
-            <div className="col-span-8 border border-solid border-gray-300 px-6 py-2 w-full inline-block">
+            <div className="col-span-8 border border-solid border-gray-300 px-6 py-2 w-full inline-block pb-5">
                 <div className="grid grid-cols-6 grid-gap-4 pb-5">
-                    <span className="text-lg col-span-3">Selected collection</span>
+                    <span className="text-lg col-span-3">{title}</span>
                     <span className="text-sm">EST Value</span>
                     <span className="text-sm">Cost</span>
                     <span className="text-sm">Currrent Supply</span>
-                    <span className="text-sm col-span-3 text-gray-500">count</span>
+                    <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
                     <span className="text-md">10E</span>
-                    <span className="text-md">3E</span>
-                    <span className="text-md">10/100</span>
+                    <span className="text-md">{totalCost}&nbsp;E</span>
+                    <span className="text-md">{currentSupply}</span>
                 </div>
 
                 {/* List here */}
@@ -45,24 +91,21 @@ export default function Portfolio() {
                         <span>id</span>
                         <span>cost</span>
                     </div>
-                    <div className="grid grid-cols-8 grid-gap-4 pt-3">
-                        <div className="text-center">
-                            <input type="checkbox" className="w-3" />
-                        </div>
-                        <span>1</span>
-                        <span>0.5E</span>
-                    </div>
-                    <div className="grid grid-cols-8 grid-gap-4 pt-2 pb-5">
-                        <div className="text-center">
-                            <input type="checkbox" className="w-3" />
-                        </div>
-                        <span>2</span>
-                        <span>0.5E</span>
+                    <div>
+                        {items.map((item: IItem, idx: number) => (
+                            <div key={idx} className="grid grid-cols-8 grid-gap-4 pt-3">
+                                <div className="text-center">
+                                    <input type="checkbox" className="w-3" />
+                                </div>
+                                <span>{item.id}</span>
+                                <span>{item.cost}&nbsp;E</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
                 {/* Bottom actions */}
-                <div className="border-t border-solid pt-4 pb-3">
+                <div className={`border - t border - solid pt - 4 pb - 3`} hidden={hideToolbar}>
                     <button
                         className="border border-solid border-gray-100 py-1 px-3"
                     >
@@ -70,6 +113,6 @@ export default function Portfolio() {
                     </button>
                 </div>
             </div>
-        </main>
+        </main >
     )
 }

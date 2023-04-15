@@ -17,6 +17,7 @@ export interface IPool {
     status: string;
     price: number;
     minted: number;
+    currentSupply: number;
     totalSupply: number;
 }
 
@@ -24,6 +25,7 @@ export interface IItem {
     collection: ICollection,
     id: number,
     owner: string;
+    cost: number;
 }
 
 /// well this context is actually a database!
