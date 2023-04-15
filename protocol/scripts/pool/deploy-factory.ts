@@ -22,7 +22,7 @@ async function main() {
 
   const factory = await (
     await ethers.getContractFactory("Factory",signer.l2)
-  ).deploy(ADDR_NFTBRIDGE_L1,ADDR_SEEDPROVIDER,facets);
+  ).deploy(ZKEVM_BRIDGE_ADDRESS,ADDR_SEEDPROVIDER,facets);
 
   await factory.deployed();
 

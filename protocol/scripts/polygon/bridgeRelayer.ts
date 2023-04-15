@@ -149,6 +149,8 @@ export class BridgeRelayer {
                         const proof = await bridgeService.getProof(srcNetworkID, args.depositCount);
 
 
+                        console.log(`data: ${args.metadata}`);
+
                         // claim the message
                         const tx = await dstBridge.connect(dstRelayerSigner).claimMessage(
                             proof.merkle_proof,
@@ -160,7 +162,7 @@ export class BridgeRelayer {
                             args.destinationNetwork,
                             args.destinationAddress,
                             args.amount,
-                            args.metadata, fastestGas);
+                            args.metadata);
 
                         const receipt = await tx.wait(confirmationBlocks);
                         if (receipt.status != 1) {

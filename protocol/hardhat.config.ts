@@ -3,6 +3,7 @@ import "@nomicfoundation/hardhat-toolbox";
 
 // This adds support for typescript paths mappings
 import "tsconfig-paths/register";
+import "hardhat-storage-layout";
 
 const config: HardhatUserConfig = {
   solidity:{
@@ -12,6 +13,11 @@ const config: HardhatUserConfig = {
         optimizer: {
           enabled: true,
           runs: 200,
+        },
+        outputSelection: {
+          "*": {
+              "*": ["storageLayout"],
+          },
         },
       },
     }],

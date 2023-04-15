@@ -19,11 +19,12 @@ async function main() {
 
 
   const waitList = [
-    ADDR_AZUKI,
-    ADDR_BAYC,
-    ADDR_DOODLES,
-    ADDR_CRYPTOPUNKS,
-    ADDR_PENNY,
+    // ADDR_AZUKI,
+    // ADDR_BAYC,
+    // ADDR_DOODLES,
+    // ADDR_CRYPTOPUNKS,
+    // ADDR_PENNY,
+    "0x09e8617f391c54530cc2d3762ceb1da9f840c5a3"
   ]
 
 
