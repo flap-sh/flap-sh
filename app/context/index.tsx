@@ -7,6 +7,7 @@ import { WagmiConfig, configureChains, createClient, useAccount } from 'wagmi'
 import Login from '@/components/Login'
 import { useIsMounted } from '@/hooks/useIsMounted'
 import { ContractsProvider } from "./contracts";
+import { TransactionProvider } from "./transaction"
 import {
     polygonZkEvm,
 } from "@wagmi/core/chains";
@@ -40,7 +41,11 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
             {
                 isMounted && !isConnected ?
                     <Login /> :
-                    <ContractsProvider>{children}</ContractsProvider>
+                    <ContractsProvider>
+                        <TransactionProvider>
+                            {children}
+                        </TransactionProvider>
+                    </ContractsProvider>
             }
         </WagmiConfig>
     )
