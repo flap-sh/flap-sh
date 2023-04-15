@@ -26,7 +26,7 @@ export default function Create() {
     const price = useMemo(() => {
         const amount = orders.reduce((acc, order) => acc + order.price * order.quantity, 0);
         return amount / count;
-    }, [orders]);
+    }, [orders, count]);
 
     return (
         <main>
@@ -62,6 +62,7 @@ export default function Create() {
                             <th>Collection</th>
                             <th>Count</th>
                             <th>price</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,6 +80,11 @@ export default function Create() {
                                 </td>
                                 <td>{order.quantity}</td>
                                 <td>{order.price}</td>
+                                <td>
+                                    <button onClick={() => removeOrder(order)}>
+                                        x
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

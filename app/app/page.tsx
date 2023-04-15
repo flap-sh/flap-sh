@@ -98,7 +98,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                     <div className="max-w-xl mt-5 p-3 py-5 border-t border-solid border-gray-300">
                         <button
                             className="border border-solid border-gray-300 py-1 px-3 text-sm"
-                            onClick={mint}
+                            onClick={() => mint()}
                         >
                             mint
                         </button>

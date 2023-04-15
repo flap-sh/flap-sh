@@ -125,7 +125,7 @@ export default function Portfolio() {
         }
 
         return hideMint && hideRefund && hideReedem
-    }, [hideMint, hideRefund, hideReedem])
+    }, [hideMint, hideRefund, hideReedem, selected])
 
     const onSelect = (item: IItem) => {
         if (selectedItems.includes(item)) {
