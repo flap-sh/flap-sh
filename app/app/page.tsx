@@ -17,7 +17,7 @@ export default function Home() {
     const { pools } = useContext(ContractsContext);
 
     return (
-        <main className="pt-5 pb-36">
+        <main className="pt-5">
             <div className="text-left">
                 <span className="max-w-xl inline-block">
                     list of pools created with this protocol, each pool has mixed several collections as a new collection,
