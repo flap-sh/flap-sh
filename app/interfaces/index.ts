@@ -11,15 +11,14 @@ export interface IOrder {
 }
 
 export interface IPool {
-    id: number;
+    id?: number;
     address: string;
-    orders: IOrder[];
-    state: number;
-    price: number;
-    minted: number;
-    currentSupply: number;
-    totalSupply: number;
-    balance: number;
+    orders?: IOrder[];
+    state?: number;
+    price?: number;
+    minted?: number;
+    totalSupply?: number;
+    balance?: number;
 }
 
 export interface IItem {

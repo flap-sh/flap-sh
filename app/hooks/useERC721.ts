@@ -44,7 +44,6 @@ export function useCollections(createdCollections: string[]) {
     const [collections, setCollections] = useState<ICollection[]>([]);
 
     useEffect(() => {
-        console.log(createdCollections);
         fetchCollections(createdCollections)
             .then((cols) => { setCollections(cols) })
     }, [createdCollections])

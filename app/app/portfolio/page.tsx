@@ -20,7 +20,7 @@ const estimateValueForItem = (pools: IPool[], item: IItem) => {
         return item.cost
     }
 
-    return pool.balance / pool.currentSupply;
+    return Number(pool.balance) / Number(pool.minted);
 };
 
 export default function Portfolio() {
@@ -37,7 +37,7 @@ export default function Portfolio() {
 
     const walletPools = useMemo(() => {
         const addrs = Array.from(new Set(walletItems.map((item) => item.poolId)));
-        return allPools.filter((pool) => addrs.includes(pool.id));
+        return allPools.filter((pool) => addrs.includes(Number(pool.id)));
     }, [walletItems, allPools]);
 
     const items = useMemo(() => {
@@ -73,9 +73,9 @@ export default function Portfolio() {
         return items.reduce((acc, item) => acc + item.cost, 0);
     }, [items]);
 
-    const currentSupply = useMemo(() => {
+    const minted = useMemo(() => {
         if (selected) {
-            return selected.currentSupply + "/" + selected.totalSupply;
+            return selected.minted + "/" + selected.totalSupply;
         }
 
         return items.length + "/" + items.length;
@@ -86,7 +86,7 @@ export default function Portfolio() {
             new Set(walletItems.map((item) => item.poolId))
         );
 
-        return walletPools.filter((pool) => activePoolAddrs.includes(pool.id));
+        return walletPools.filter((pool) => activePoolAddrs.includes(Number(pool.id)));
     }, [walletItems, walletPools]);
 
 
@@ -175,11 +175,11 @@ export default function Portfolio() {
                     <span className="text-lg col-span-3">{title}</span>
                     <span className="text-sm">EST Value</span>
                     <span className="text-sm">Cost</span>
-                    <span className="text-sm">Currrent Supply</span>
+                    <span className="text-sm">Minted</span>
                     <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
                     <span className="text-md">{estValue}&nbsp;E</span>
                     <span className="text-md">{totalCost}&nbsp;E</span>
-                    <span className="text-md text-center">{currentSupply}</span>
+                    <span className="text-md text-center">{minted}</span>
                 </div>
 
                 {/* List here */}
