@@ -14,7 +14,7 @@ export interface IPool {
     id: number;
     address: string;
     orders: IOrder[];
-    status: string;
+    state: 0;
     price: number;
     minted: number;
     currentSupply: number;

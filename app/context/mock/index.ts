@@ -13,7 +13,7 @@ export const orders = [{
 export const pools = [{
     id: 1,
     address: "0x00",
-    status: "Mintable",
+    state: 0,
     price: 0.5,
     minted: 10,
     currentSupply: 20,

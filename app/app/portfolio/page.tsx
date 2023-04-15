@@ -6,21 +6,35 @@ import { useContext, useMemo, useState } from "react";
 
 import { useAccount } from "wagmi"
 
+const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
+    return items.filter((item) => item.collection.address === pool.address);
+};
+
 export default function Portfolio() {
     const { address } = useAccount();
-    const { pools: _pools, items: allItems } = useContext(ContractsContext);
+    const { pools: allPools, items: allItems } = useContext(ContractsContext);
     const [selected, _setSelected] = useState<IPool | null>(null);
+    const [filter, _setFilter] = useState<number | null>(null);
 
-    const items = useMemo(() => {
-        // TODO: on testnet
-        // const myItems = allItems.filter((item) => item.owner === address);
-        const myItems = allItems;
-
-        if (selected) {
-            return myItems.filter((item) => item.collection.address === selected.address);
+    const pools = useMemo(() => {
+        if (filter) {
+            return allPools.filter((pool) => pool.state === filter);
         }
 
-        return myItems
+        return allPools;
+    }, [allPools, filter]);
+
+    const walletItems = useMemo(() => {
+        // TODO: return allItems.filter((item) => item.owner === address);
+        return allItems
+    }, [allItems, address]);
+
+    const items = useMemo(() => {
+        if (selected) {
+            return walletItems.filter((item) => item.collection.address === selected.address);
+        }
+
+        return walletItems
     }, [selected, allItems, address]);
 
     const hideToolbar = useMemo(() => {
@@ -63,12 +77,19 @@ export default function Portfolio() {
                     {/* table head */}
                     <span className="w-10">id</span>
                     <span className="w-20">owned</span>
-                    <span className="">status</span>
-                    {/* items */}
-                    <span className="w-10">1</span>
-                    <span className="w-20">5</span>
-                    <span>REFUNDABLE</span>
+                    <span className="">state</span>
+
                 </div>
+                {/* items */}
+                {pools.map((pool: IPool) => (
+                    <div className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10">
+                        <span className="w-10">{pool.id}</span>
+                        <span className="w-20">
+                            {ownedItemsForPool(pool, walletItems).length}
+                        </span>
+                        <span>{pool.state}</span>
+                    </div>
+                ))}
             </div>
 
             {/* collection info */}
