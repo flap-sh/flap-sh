@@ -15,12 +15,15 @@ async function main() {
     const signer = getSigners();
 
 
-    const pool = "0x065Bf07082127921c47d790D3187829b74512447";
+    const pool = "0x980B595C17712f4357C72ea64b8f0E5ed852D838";
     const seed = ISeedProvider__factory.connect(ADDR_SEEDPROVIDER, signer.l1);
 
-    const tx = await (await seed.requestSeed(pool,fastestGas)).wait(1);
+    const receipt = await (await seed.requestSeed(pool,fastestGas)).wait(1);
 
-    console.log("Seed requested at block #", tx.blockNumber);
+    console.log(receipt);
+
+
+    console.log("Seed requested at block #", receipt.blockNumber);
 
 
 }

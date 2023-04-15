@@ -15,7 +15,7 @@ async function main() {
     const provider = getProviders();
     const signer = getSigners();
 
-    const requestID = 0;
+    const requestID = 3;
     const seed = SeedProvider__factory.connect(ADDR_SEEDPROVIDER, signer.l1);
 
     const req  = await seed.requests(requestID);

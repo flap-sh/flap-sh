@@ -4,6 +4,7 @@ import { ZKEVM_BRIDGE_ADDRESS } from "../polygon/constants";
 import dotenv from "dotenv";
 import { IPoolFactory__factory, IPool__factory, NFTBridgeL1__factory, PeggedNFT__factory } from "@tc/index";
 import { ADDR_AZUKI_L2, ADDR_BAYC_L2, ADDR_CRYPTOPUNKS_L2, ADDR_DOODLES_L2, ADDR_NFTBRIDGE_L1, ADDR_PENNY_L2, ADDR_POOL_FACTORY, ADDR_SEEDPROVIDER } from "scripts/deployed";
+import { gas10gwei } from "scripts/helper/gasPrice";
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ async function main() {
 
     for(const peggedNFT of peggedNFTs){
         await (
-            await factory.addCollectionToWhitelist(peggedNFT)
+            await factory.addCollectionToWhitelist(peggedNFT,gas10gwei)
         ).wait();
         
         console.log(`peggedNFT ${peggedNFT} added to whitelist`);

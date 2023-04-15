@@ -27,7 +27,7 @@ async function main(){
         dstRelayerSigner: signer.l2,
         bridgeService: new BridgeService(BridgeServiceType.TESTNET),
         log: console.log,
-        lastBlock: 8833595,
+        lastBlock: 8834071,
         confirmationBlocks: 1, // trust the sequencer
         filter: (o:BridgeEventEventObject) => o.originAddress.toLowerCase() == ADDR_SEEDPROVIDER.toLowerCase()
     });
