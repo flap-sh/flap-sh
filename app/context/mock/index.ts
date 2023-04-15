@@ -18,11 +18,60 @@ export const pools = [{
     minted: 10,
     currentSupply: 20,
     totalSupply: 100,
+    balance: 1000,
+    orders,
+},
+{
+    id: 2,
+    address: "0x01",
+    state: 1,
+    price: 0.5,
+    minted: 10,
+    currentSupply: 20,
+    totalSupply: 100,
+    balance: 1000,
+    orders,
+}, {
+    id: 3,
+    address: "0x02",
+    state: 2,
+    price: 0.5,
+    minted: 10,
+    currentSupply: 20,
+    totalSupply: 100,
+    balance: 1000,
+    orders,
+}, {
+    id: 4,
+    address: "0x03",
+    state: 3,
+    price: 0.5,
+    minted: 10,
+    currentSupply: 20,
+    totalSupply: 100,
+    balance: 1000,
     orders,
 }];
 
 export const items = [{
     poolId: 1,
+    id: 0,
+    owner: "0x000",
+    cost: 0.08
+}, {
+    poolId: 2,
+    id: 0,
+    owner: "0x000",
+    cost: 0.08
+},
+{
+    poolId: 3,
+    id: 0,
+    owner: "0x000",
+    cost: 0.08
+},
+{
+    poolId: 4,
     id: 0,
     owner: "0x000",
     cost: 0.08

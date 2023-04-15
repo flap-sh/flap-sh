@@ -10,13 +10,25 @@ const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
     return items.filter((item) => item.poolId === pool.id);
 };
 
+const poolOfItem = (pools: IPool[], item: IItem) => {
+    return pools.find((pool) => pool.id === item.poolId);
+};
+
+const estimateValueForItem = (pools: IPool[], item: IItem) => {
+    const pool = poolOfItem(pools, item);
+    if (pool?.state !== 3) {
+        return item.cost
+    }
+
+    return pool.balance / pool.currentSupply;
+};
+
 export default function Portfolio() {
     const { address: _ } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
-    const [selected, _setSelected] = useState<IPool | null>(null);
+    const [selected, setSelected] = useState<IPool | null>(null);
     const [filter, setFilter] = useState<number>(4);
-
-
+    const [selectedItems, setSelectedItems] = useState<IItem[]>([]);
 
     const walletItems = useMemo(() => {
         // TODO: return allItems.filter((item) => item.owner === address);
@@ -42,11 +54,8 @@ export default function Portfolio() {
         }
 
         return walletPools;
-    }, [allPools, filter]);
+    }, [filter, walletPools]);
 
-    const hideToolbar = useMemo(() => {
-        return selected === null;
-    }, [selected]);
 
     const title = useMemo(() => {
         if (selected) {
@@ -55,6 +64,10 @@ export default function Portfolio() {
 
         return "All items";
     }, [selected]);
+
+    const estValue = useMemo(() => {
+        return items.reduce((acc, item) => acc + estimateValueForItem(pools, item), 0);
+    }, [items, pools]);
 
     const totalCost = useMemo(() => {
         return items.reduce((acc, item) => acc + item.cost, 0);
@@ -68,6 +81,39 @@ export default function Portfolio() {
         return items.length + "/" + items.length;
     }, [items, selected]);
 
+    const activePools = useMemo(() => {
+        const activePoolAddrs = Array.from(
+            new Set(walletItems.map((item) => item.poolId))
+        );
+
+        return walletPools.filter((pool) => activePoolAddrs.includes(pool.id));
+    }, [walletItems, walletPools]);
+
+
+    const hideMint = useMemo(() => {
+        return activePools.filter((pool) => pool.state === 0).length === 0
+    }, [activePools]);
+
+    const hideRefund = useMemo(() => {
+        return activePools.filter((pool) => pool.state === 1).length === 0
+    }, [activePools]);
+
+    const hideClaim = useMemo(() => {
+        return activePools.filter((pool) => pool.state === 3).length === 0
+    }, [activePools]);
+
+    const hideToolbar = useMemo(() => {
+        return hideMint && hideRefund && hideClaim;
+    }, [hideMint, hideRefund, hideClaim]);
+
+    const onSelect = (item: IItem) => {
+        if (selectedItems.includes(item)) {
+            setSelectedItems(selectedItems.filter((i) => i.id !== item.id));
+        } else {
+            setSelectedItems([...selectedItems, item]);
+        }
+    };
+
     return (
         <main className="grid grid-cols-12">
             <div className="col-span-4">
@@ -75,7 +121,7 @@ export default function Portfolio() {
                     Pools
                 </span>
                 <span
-                    className="border-x border-solid border-gray-300 px-6 py-2 w-full inline-block"
+                    className="border border-solid border-gray-300 px-6 py-2 w-full inline-block"
                 >
                     <div className="space-y-1">
                         {Object.values(STATES).map((state: string, idx: number) => (
@@ -100,11 +146,20 @@ export default function Portfolio() {
                     <span className="w-10">Id</span>
                     <span className="w-20">Owned</span>
                     <span className="">State</span>
-
                 </div>
                 {/* items */}
+                <div
+                    className="border border-solid border-gray-300 leading-10 hover:cursor-pointer text-center"
+                    onClick={() => setSelected(null)}
+                >
+                    All items
+                </div>
                 {pools.map((pool: IPool, idx: number) => (
-                    <div key={idx} className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10">
+                    <div
+                        key={idx}
+                        className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10 hover:cursor-pointer"
+                        onClick={() => setSelected(pool)}
+                    >
                         <span className="w-10">#{pool.id}</span>
                         <span className="w-20">
                             {ownedItemsForPool(pool, walletItems).length}
@@ -122,9 +177,9 @@ export default function Portfolio() {
                     <span className="text-sm">Cost</span>
                     <span className="text-sm">Currrent Supply</span>
                     <span className="text-sm col-span-3 text-gray-500">{items.length}</span>
-                    <span className="text-md">10E</span>
+                    <span className="text-md">{estValue}&nbsp;E</span>
                     <span className="text-md">{totalCost}&nbsp;E</span>
-                    <span className="text-md">{currentSupply}</span>
+                    <span className="text-md text-center">{currentSupply}</span>
                 </div>
 
                 {/* List here */}
@@ -140,23 +195,42 @@ export default function Portfolio() {
                         {items.map((item: IItem, idx: number) => (
                             <div key={idx} className="grid grid-cols-5 grid-gap-4 pt-3">
                                 <div className="text-center">
-                                    <input type="checkbox" className="w-3" />
+                                    <input
+                                        type="checkbox"
+                                        className="w-3"
+                                        onChange={() => onSelect(item)}
+                                    />
                                 </div>
                                 <span>#{item.poolId}</span>
                                 <span>#{item.id}</span>
                                 <span>{item.cost}&nbsp;E</span>
-                                <span>{item.cost}&nbsp;E</span>
+                                <span>{estimateValueForItem(walletPools, item)}&nbsp;E</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Bottom actions */}
-                <div className={`border - t border - solid pt - 4 pb - 3`} hidden={hideToolbar}>
+                <div className={`border-t border-solid pt-5 mt-10 text-right`} hidden={hideToolbar}>
                     <button
-                        className="border border-solid border-gray-100 py-1 px-3"
+                        className="border border-solid border-gray-100 py-1 px-3 text-xs"
+                        hidden={hideMint}
                     >
-                        mb refund
+                        Mint
+                    </button>
+
+                    <button
+                        className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
+                        hidden={hideRefund}
+                    >
+                        Refund
+                    </button>
+
+                    <button
+                        className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
+                        hidden={hideClaim}
+                    >
+                        Claim
                     </button>
                 </div>
             </div>
