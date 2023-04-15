@@ -2,7 +2,6 @@ export interface ICollection {
     logo: string;
     name: string;
     address: string;
-    bridged?: boolean;
 }
 
 export interface IOrder {
@@ -30,6 +29,8 @@ export interface IItem {
 /// well this context is actually a database!
 export interface IContractsContext {
     factory: string;
+    createdPools: string[];
+    wlCollections: string[];
     /// whitelisted collections.
     collections: ICollection[];
     /// all pools.

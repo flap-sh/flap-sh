@@ -2,7 +2,6 @@ export const collections = [{
     name: "abc",
     logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
     address: "0x00",
-    bridged: false,
 }];
 
 export const orders = [{
