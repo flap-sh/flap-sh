@@ -58,8 +58,11 @@ abstract contract PoolBase is
     /// @dev the max supply of the box
     uint256 internal _maxSupply;
 
-    /// @dev the current supply of the box
-    uint256 internal _currentSupply;
+    /// @dev the number of box minted
+    uint256 internal _minted;
+
+    /// @dev the number of buy orders filled 
+    uint256 internal _filled;
 
     /// @dev the protocol fee rate in basis points (i.e, 100 = 1%)
     uint64 internal _feeRate;
@@ -143,7 +146,7 @@ abstract contract PoolBase is
 
            if (_poolState == PoolState.STATE_MINTABLE) {
 
-                if(_currentSupply == _maxSupply) {
+                if(_minted == _maxSupply) {
                     _poolState = PoolState.STATE_REVEALABLE;
 
                     emit StateTransited(
@@ -449,7 +452,15 @@ contract PoolFacetBuyOrder is PoolBase, IPoolFacetBuyOrderBox {
     }
 
     function currentSupply() public view override returns (uint256) {
-        return _currentSupply;
+        return _minted;
+    }
+
+    function minted() public view override returns (uint256) {
+        return _minted;
+    }
+
+    function filled() public view override returns (uint256) {
+        return _filled;
     }
 
 
@@ -478,12 +489,12 @@ contract PoolFacetBuyOrder is PoolBase, IPoolFacetBuyOrderBox {
             msg.value >= price,
             "Pool: msg.value is less than mintPrice()"
         );
-        require(_currentSupply < _maxSupply, "Pool: no more boxs left");
+        require(_minted < _maxSupply, "Pool: no more boxs left");
 
         // TODO: reentrancy attack analysis ???
 
         // mint the box
-        _safeMint(msg.sender, _currentSupply++);
+        _safeMint(msg.sender, _minted++);
 
         if (msg.value > price) {
             // refund the extra ethers
@@ -491,7 +502,7 @@ contract PoolFacetBuyOrder is PoolBase, IPoolFacetBuyOrderBox {
         }
 
         // possible transition to  STATE_REVEALABLE state
-        if (_currentSupply == _maxSupply) {
+        if (_minted == _maxSupply) {
             poolState();
         }
     }
@@ -576,6 +587,8 @@ contract PoolFacetBuyOrder is PoolBase, IPoolFacetBuyOrderBox {
             redeemed: 0,
             tokenID: uint128(tokenID)
         });
+
+        _filled ++;
 
         // send the ethers to the seller 
         AddressUpgradeable.sendValue(payable(msg.sender), order.price);
@@ -739,11 +752,11 @@ contract PoolFacetBuyOrder is PoolBase, IPoolFacetBuyOrderBox {
             poolCachedState() == PoolState.STATE_REDEEMABLE,
             "Pool: pool is not in STATE_REDMEEMABLE"
         );
-        require(_boxID < _currentSupply, "Pool: boxID is invalid");
+        require(_boxID < _minted, "Pool: boxID is invalid");
 
         orderID = ShuffleLib.computeShuffledIndex(
             _boxID,
-            _currentSupply,
+            _minted,
             _seed
         );
 
