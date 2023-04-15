@@ -5,6 +5,12 @@ pragma solidity ^0.8.17;
 import "./IPoolTypes.sol";
 
 interface IPoolFactory is IPoolTypes {
+
+    struct PoolInfo {
+        address poolAddress;
+        PoolState state;
+        PoolParams meta;
+    }
     
     /// create a new Pool
     /// @param _nftOrderBatches  The "NFTBuyOrder"s that you want to include in the pool
@@ -28,7 +34,7 @@ interface IPoolFactory is IPoolTypes {
 
 
     /// @dev get the info of a box pool 
-    function getPoolInfo(uint256 _poolID) external view returns (PoolParams memory);
+    function getPoolInfo(uint256 _poolID) external view returns (PoolInfo memory);
     
 
     /// @dev return the total number of box pools

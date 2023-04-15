@@ -123,6 +123,9 @@ contract Factory is IPoolFactory, Ownable {
         IPool(pool).initialize(params);
         
 
+        // add to pool mapping 
+        _pools[_numPools] = pool;
+
         // emit NewPoolCreated 
         emit NewPoolCreated(pool, msg.sender, _numPools++);
 
@@ -186,14 +189,20 @@ contract Factory is IPoolFactory, Ownable {
     }
 
         /// @dev get the info of a box pool 
-    function getPoolInfo(uint256 _poolID) external view returns (PoolParams memory){
+    function getPoolInfo(uint256 _poolID) external view returns (PoolInfo memory){
 
         require(
             _poolID < _numPools,
             "Factory: invalid poolID"
         );
 
-        return IPool(_pools[_poolID]).params();
+        address pool = _pools[_poolID];
+
+        return PoolInfo({
+            poolAddress: pool,
+            state: IPool(pool).poolCachedState(),
+            meta: IPool(pool).params()
+        });
     }
     
 

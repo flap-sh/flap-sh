@@ -3,7 +3,7 @@ import { getProviders, getSigners } from "../helper/getProviders";
 import { ZKEVM_BRIDGE_ADDRESS } from "../polygon/constants";
 import dotenv from "dotenv";
 import { IPoolFactory__factory, IPool__factory, NFTBridgeL1__factory, PeggedNFT__factory } from "@tc/index";
-import { ADDR_AZUKI_L2, ADDR_BAYC_L2, ADDR_CRYPTOPUNKS_L2, ADDR_DOODLES_L2, ADDR_NFTBRIDGE_L1, ADDR_POOL_FACTORY, ADDR_SEEDPROVIDER } from "scripts/deployed";
+import { ADDR_AZUKI_L2, ADDR_BAYC_L2, ADDR_CRYPTOPUNKS_L2, ADDR_DOODLES_L2, ADDR_NFTBRIDGE_L1, ADDR_PENNY_L2, ADDR_POOL_FACTORY, ADDR_SEEDPROVIDER } from "scripts/deployed";
 
 dotenv.config();
 
@@ -19,6 +19,7 @@ async function main() {
   // add all the "pegged NFT" of the pre-deployed NFTs to the whitelist
 
   const peggedNFTs = [
+    ADDR_PENNY_L2,
     ADDR_AZUKI_L2,
     ADDR_BAYC_L2,
     ADDR_CRYPTOPUNKS_L2,

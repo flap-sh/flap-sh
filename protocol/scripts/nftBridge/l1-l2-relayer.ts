@@ -27,7 +27,7 @@ async function main(){
         dstRelayerSigner: signer.l2,
         bridgeService: new BridgeService(BridgeServiceType.TESTNET),
         log: console.log,
-        lastBlock: 8832091,
+        lastBlock: 8832930,
         confirmationBlocks: 1, // trust the sequencer
         filter: (o:BridgeEventEventObject) => o.originAddress.toLowerCase() == ADDR_NFTBRIDGE_L1.toLowerCase()
     });
