@@ -7,35 +7,42 @@ import { STATES } from "@/hooks/usePool";
 
 
 const ownedItemsForPool = (pool: IPool, items: IItem[]) => {
-    return items.filter((item) => item.collection.address === pool.address);
+    return items.filter((item) => item.poolId === pool.id);
 };
 
 export default function Portfolio() {
-    const { address } = useAccount();
+    const { address: _ } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
     const [selected, _setSelected] = useState<IPool | null>(null);
     const [filter, setFilter] = useState<number>(4);
 
-    const pools = useMemo(() => {
-        if (filter !== 4) {
-            return allPools.filter((pool) => pool.state === filter);
-        }
 
-        return allPools;
-    }, [allPools, filter]);
 
     const walletItems = useMemo(() => {
         // TODO: return allItems.filter((item) => item.owner === address);
         return allItems
-    }, [allItems, address]);
+    }, [allItems]);
+
+    const walletPools = useMemo(() => {
+        const addrs = Array.from(new Set(walletItems.map((item) => item.poolId)));
+        return allPools.filter((pool) => addrs.includes(pool.id));
+    }, [walletItems, allPools]);
 
     const items = useMemo(() => {
         if (selected) {
-            return walletItems.filter((item) => item.collection.address === selected.address);
+            return walletItems.filter((item) => item.poolId === selected.id);
         }
 
         return walletItems
-    }, [selected, allItems, address]);
+    }, [selected, walletItems]);
+
+    const pools = useMemo(() => {
+        if (filter !== 4) {
+            return walletPools.filter((pool) => pool.state === filter);
+        }
+
+        return walletPools;
+    }, [allPools, filter]);
 
     const hideToolbar = useMemo(() => {
         return selected === null;
@@ -59,7 +66,7 @@ export default function Portfolio() {
         }
 
         return items.length + "/" + items.length;
-    }, [items]);
+    }, [items, selected]);
 
     return (
         <main className="grid grid-cols-12">
@@ -98,7 +105,7 @@ export default function Portfolio() {
                 {/* items */}
                 {pools.map((pool: IPool, idx: number) => (
                     <div key={idx} className="border border-solid border-gray-300 grid grid-cols-3 px-5 leading-10">
-                        <span className="w-10">{pool.id}</span>
+                        <span className="w-10">#{pool.id}</span>
                         <span className="w-20">
                             {ownedItemsForPool(pool, walletItems).length}
                         </span>
@@ -122,18 +129,22 @@ export default function Portfolio() {
 
                 {/* List here */}
                 <div className="border-t border-solid">
-                    <div className="grid grid-cols-8 grid-gap-4 pt-6">
+                    <div className="grid grid-cols-5 grid-gap-4 pt-6">
                         <span></span>
-                        <span>id</span>
-                        <span>cost</span>
+                        <span>Pool</span>
+                        <span>Id</span>
+                        <span>Cost</span>
+                        <span>EST Value</span>
                     </div>
                     <div>
                         {items.map((item: IItem, idx: number) => (
-                            <div key={idx} className="grid grid-cols-8 grid-gap-4 pt-3">
+                            <div key={idx} className="grid grid-cols-5 grid-gap-4 pt-3">
                                 <div className="text-center">
                                     <input type="checkbox" className="w-3" />
                                 </div>
-                                <span>{item.id}</span>
+                                <span>#{item.poolId}</span>
+                                <span>#{item.id}</span>
+                                <span>{item.cost}&nbsp;E</span>
                                 <span>{item.cost}&nbsp;E</span>
                             </div>
                         ))}

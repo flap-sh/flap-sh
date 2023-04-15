@@ -22,7 +22,7 @@ export const pools = [{
 }];
 
 export const items = [{
-    collection: collections[0],
+    poolId: 1,
     id: 0,
     owner: "0x000",
     cost: 0.08

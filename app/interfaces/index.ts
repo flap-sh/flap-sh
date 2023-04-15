@@ -22,7 +22,7 @@ export interface IPool {
 }
 
 export interface IItem {
-    collection: ICollection,
+    poolId: number,
     id: number,
     owner: string;
     cost: number;
