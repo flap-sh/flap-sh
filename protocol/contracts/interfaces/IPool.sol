@@ -167,11 +167,19 @@ interface IPoolFacetBuyOrderBox is IPoolEvents {
     /// @param _boxID - the ID of the box to refund
     function refund(uint256 _boxID) external;
 
-    /// @dev get the current supply of the box 
+    /// @dev get the current supply of the box (@deprecated same as minted)
     function currentSupply() external view returns (uint256);
 
-    /// @dev total supply of the box
+    // @dev get the total number of boxes minted
+    function minted() external view returns (uint256);
+
+    // @dev get the total number of orders filled
+    function filled() external view returns (uint256);
+
+    /// @dev total supply of the box 
     function totalSupply() external view returns (uint256);
+
+
 
 }
 

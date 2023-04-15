@@ -14,11 +14,11 @@ async function main() {
 
 
   const facets = [
-    '0x9992e7d19B8c342053c42aF873B0E05B9EC5B40f',
-    '0xef605905a74B05CD227CB9F23640FC41E3C2Cc0c',
-    '0x41147c750768D881F951016F68e10425c078FB0a',
-    '0xAA522b36ee2da9fd52C273A77e9a4e38666fC654'
-  ];
+    '0x63D32B95b77711cC3Ce77445A5Ca7521A4896581',
+    '0x9De6817587DB75e4Df15785Efba145Fa0DCE75cD',
+    '0xa26F06f8706F975eb1CC0a303407a8BaE8614D6f',
+    '0x4cf1D978cc00E221cb8364E26C2c80f214471F76'
+  ]
 
   const factory = await (
     await ethers.getContractFactory("Factory",signer.l2)
