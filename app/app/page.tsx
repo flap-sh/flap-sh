@@ -1,16 +1,28 @@
 "use client"
 import Image from "next/image"
+import { Disclosure } from '@headlessui/react'
+import { IPoolDetail } from "@/interfaces"
 
 const data = [{
     "id": "1",
     "address": "0x00",
-    "collections": [{
-        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-        address: "0x00"
+    "orders": [{
+        collection: {
+            name: "abc",
+            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+            address: "0x00",
+        },
+        quantity: 50,
+        price: 1,
     },
     {
-        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-        address: "0x00"
+        collection: {
+            name: "abc",
+            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+            address: "0x00",
+        },
+        quantity: 50,
+        price: 1,
     }],
     "status": "Mintable",
     "price": "0.5",
@@ -19,13 +31,24 @@ const data = [{
 }, {
     "id": "2",
     "address": "0x00",
-    "collections": [{
-        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-        address: "0x00"
+    "orders": [{
+        collection: {
+            name: "abc",
+            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+            address: "0x00",
+        },
+        quantity: 50,
+        price: 1,
+
     },
     {
-        logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
-        address: "0x00"
+        collection: {
+            name: "abc",
+            logo: "https://logo.nftscan.com/logo/0xed5af388653567af2f388e6224dc7c4b3241c544.png",
+            address: "0x00",
+        },
+        quantity: 50,
+        price: 1,
     }],
     "status": "Mintable",
     "price": "0.5",
@@ -48,35 +71,84 @@ export default function Home() {
                     </a>
                 </div>
             </div>
-            <table className="table-auto w-full text-left">
-                <thead >
-                    <tr>
-                        <th>id</th>
-                        <th>address</th>
-                        <th>collections</th>
-                        <th>status</th>
-                        <th>price</th>
-                        <th>minted</th>
-                    </tr>
-                </thead>
-                <tbody >
-                    {data.map((d, idx) => (
-                        <tr key={idx} className="leading-10">
-                            <td>#{d.id}</td>
-                            <td>{d.address}</td>
-                            <td className="flex flex-row items-center h-10">
-                                {/* TODO: sorting */}
-                                {d.collections.map((c, idx) => (
-                                    <Image key={idx} height={20} width={20} className="mr-2" src={c.logo} alt={c.address} />
-                                ))}
-                            </td>
-                            <td>{d.status}</td>
-                            <td>{d.price}E</td>
-                            <td>{d.minted}/{d.totalSupply}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="grid grid-cols-6 pb-3 font-bold">
+                <span>id</span>
+                <span>address</span>
+                <span>collections</span>
+                <span>status</span>
+                <span>price</span>
+                <span>minted</span>
+            </div>
+            <div> {/* collection list */}
+                {data.map((d, idx) => (
+                    <PoolItem key={idx} detail={d as any} />
+                ))}
+            </div>
         </main>
     )
+}
+
+function PoolItem({ detail: d }: { detail: IPoolDetail }) {
+    return (
+        <Disclosure as="div" className="pt-3">
+            <Disclosure.Button className="w-full text-left">
+                <div className="grid grid-cols-6">
+                    <span>#{d.id}</span>
+                    <span>{d.address}</span>
+                    <span className="flex flex-row items-center">
+                        {/* TODO: sorting */}
+                        {d.orders.map((c, idx) => (
+                            <Image
+                                key={idx}
+                                height={15}
+                                width={15}
+                                className="mr-2"
+                                src={c.collection.logo}
+                                alt={c.collection.address}
+                            />
+                        ))}
+                    </span>
+                    <span>{d.status}</span>
+                    <span>{d.price}E</span>
+                    <span>{d.minted}/{d.totalSupply}</span>
+                </div>
+            </Disclosure.Button>
+            <Disclosure.Panel
+                as="div"
+                className="border border-solid border-gray-300 mt-3 pt-8 px-10 max-w-xl"
+            >
+                <div className="grid grid-cols-3 text-center">
+                    <span>collection</span>
+                    <span>filled</span>
+                    <span>chance</span>
+                </div>
+                {d.orders.map((o, idx) => (
+                    <div key={idx} className="grid grid-cols-3 pt-3 text-center">
+                        <span className="flex flex-row items-center justify-center">
+                            <Image
+                                height={15}
+                                width={15}
+                                className="mr-2"
+                                src={o.collection.logo}
+                                alt={o.collection.address}
+                            />
+                            {o.collection.name}
+                        </span>
+                        <span>5/{o.quantity}</span>
+                        <span>20%</span>
+                    </div>
+                ))}
+
+                {/* tools */}
+                <div className="w-full text-right">
+                    <div className="max-w-xl mt-5 p-3 py-5 border-t border-solid border-gray-300">
+                        <button className="border border-solid border-gray-300 py-1 px-3 text-sm">
+                            mint
+                        </button>
+                    </div>
+                </div>
+            </Disclosure.Panel>
+        </Disclosure>
+    )
+
 }
