@@ -207,7 +207,7 @@ export default function Portfolio() {
                 <div className="border-t border-solid">
                     <div className="grid grid-cols-5 grid-gap-4 pt-6">
                         <span className="text-center">
-                            {selected && selected.state !== 2 && <input
+                            {selected && selected.state !== 2 && selected.state !== 0 && <input
                                 type="checkbox"
                                 className="w-3"
                                 onChange={() => {
@@ -228,7 +228,7 @@ export default function Portfolio() {
                         {items.map((item: IItem, idx: number) => (
                             <div key={idx} className="grid grid-cols-5 grid-gap-4 pt-3">
                                 <div className="text-center">
-                                    {selected && selected.state !== 2 && <input
+                                    {selected && selected.state !== 2 && selected.state !== 0 && <input
                                         type="checkbox"
                                         className="w-3"
                                         checked={selectedItems.includes(item)}
@@ -251,13 +251,14 @@ export default function Portfolio() {
                         hidden={hideMint}
                         onClick={() => mint(selected?.address, selected?.price)}
                     >
-                        Mint
+                        Mint More
                     </button>
 
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
                         hidden={hideRefund}
                         onClick={() => refund(selectedItems.map((i) => (i.id)), selected?.address)}
+                        disabled={selectedItems.length === 0}
                     >
                         Refund
                     </button>
@@ -265,6 +266,7 @@ export default function Portfolio() {
                     <button
                         className="border border-solid border-gray-100 py-1 px-3 text-xs ml-5"
                         hidden={hideReedem}
+                        disabled={selectedItems.length === 0}
                         onClick={() => redeem(selectedItems.map((i) => (i.id)), selected?.address)}
                     >
                         Reedem

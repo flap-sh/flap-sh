@@ -6,6 +6,10 @@ import { useContext } from "react";
 import { ContractsContext } from "@/context/contracts";
 import { STATES, usePool } from "@/hooks/usePool"
 
+const fixed = (value: number) => {
+    return (Math.round(value * 100) / 100).toFixed(2);
+};
+
 export default function Home() {
     const { pools } = useContext(ContractsContext);
 
@@ -27,7 +31,7 @@ export default function Home() {
                 <span className="text-center">id</span>
                 <span>address</span>
                 <span>collections</span>
-                <span>status</span>
+                <span>state</span>
                 <span>price</span>
                 <span>minted</span>
             </div>
@@ -63,7 +67,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                         ))}
                     </span>
                     <span>{STATES[d.state ? d.state : 0]}</span>
-                    <span>{d.price}E</span>
+                    <span>{fixed(Number(d.price))}E</span>
                     <span>{d.minted}/{d.totalSupply}</span>
                 </div>
             </Disclosure.Button>
@@ -71,15 +75,14 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                 as="div"
                 className="flex items-center w-full justify-center"
             >
-                <div className="border border-solid border-gray-300 mt-5 my-3 pt-8 px-10 max-w-xl">
-                    <div className="grid grid-cols-5 text-center">
+                <div className="border border-solid border-gray-300 mt-5 my-3 pt-8 px-10 max-w-xl pb-8">
+                    <div className="grid grid-cols-4 text-center">
                         <span className="col-span-2">collection</span>
                         <span>address</span>
-                        <span>filled</span>
                         <span>chance</span>
                     </div>
                     {d.orders?.map((o, idx) => (
-                        <div key={idx} className="grid grid-cols-5 pt-3 text-center">
+                        <div key={idx} className="grid grid-cols-4 pt-3 text-center">
                             <span className="flex flex-row items-center justify-center col-span-2">
                                 <Image
                                     height={15}
@@ -91,14 +94,13 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                                 {o.collection.name}
                             </span>
                             <span>{o.collection.address?.slice(0, 6)}...{o.collection.address?.slice(38, 42)}</span>
-                            <span>0/{o.quantity}</span>
                             <span>20%</span>
                         </div>
                     ))}
 
                     {/* tools */}
-                    <div className="w-full text-right">
-                        <div className="max-w-xl mt-5 p-3 py-5 border-t border-solid border-gray-300">
+                    <div className="w-full text-right" hidden={d.state !== 0}>
+                        <div className="max-w-xl mt-5 pt-5 border-t border-solid border-gray-300">
                             <button
                                 className="border border-solid border-gray-300 py-1 px-3 text-sm"
                                 onClick={() => mint()}
