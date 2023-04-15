@@ -22,6 +22,10 @@ const estimateValueForItem = (pools: IPool[], item: IItem) => {
     return Number(pool.balance) / Number(pool.minted);
 };
 
+const fixed = (value: number) => {
+    return (Math.round(value * 100) / 100).toFixed(2);
+};
+
 export default function Portfolio() {
     const { address } = useAccount();
     const { pools: allPools, items: allItems } = useContext(ContractsContext);
@@ -65,11 +69,13 @@ export default function Portfolio() {
     }, [selected]);
 
     const estValue = useMemo(() => {
-        return items.reduce((acc, item) => acc + estimateValueForItem(pools, item), 0);
+        const value = items.reduce((acc, item) => acc + estimateValueForItem(pools, item), 0);
+        return (Math.round(value * 100) / 100).toFixed(2);
     }, [items, pools]);
 
     const totalCost = useMemo(() => {
-        return items.reduce((acc, item) => acc + item.cost, 0);
+        const value = items.reduce((acc, item) => acc + item.cost, 0);
+        return (Math.round(value * 100) / 100).toFixed(2);
     }, [items]);
 
     const minted = useMemo(() => {
@@ -200,7 +206,19 @@ export default function Portfolio() {
                 {/* List here */}
                 <div className="border-t border-solid">
                     <div className="grid grid-cols-5 grid-gap-4 pt-6">
-                        <span></span>
+                        <span className="text-center">
+                            {selected && selected.state !== 2 && <input
+                                type="checkbox"
+                                className="w-3"
+                                onChange={() => {
+                                    if (selectedItems.length === items.length) {
+                                        setSelectedItems([])
+                                    } else {
+                                        setSelectedItems(items)
+                                    }
+                                }}
+                            />}
+                        </span>
                         <span>Pool</span>
                         <span>Id</span>
                         <span>Cost</span>
@@ -210,16 +228,17 @@ export default function Portfolio() {
                         {items.map((item: IItem, idx: number) => (
                             <div key={idx} className="grid grid-cols-5 grid-gap-4 pt-3">
                                 <div className="text-center">
-                                    {selected && <input
+                                    {selected && selected.state !== 2 && <input
                                         type="checkbox"
                                         className="w-3"
+                                        checked={selectedItems.includes(item)}
                                         onChange={() => onSelect(item)}
                                     />}
                                 </div>
                                 <span>#{item.poolId}</span>
                                 <span>#{item.id}</span>
-                                <span>{item.cost}&nbsp;E</span>
-                                <span>{estimateValueForItem(walletPools, item)}&nbsp;E</span>
+                                <span>{fixed(item.cost)}&nbsp;E</span>
+                                <span>{fixed(estimateValueForItem(walletPools, item))}&nbsp;E</span>
                             </div>
                         ))}
                     </div>

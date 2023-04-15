@@ -217,7 +217,7 @@ export function usePool(address?: string) {
         multicall(ids.map((id) => ({
             address: addressOverride ? addressOverride : address as any,
             abi: IPoolABI.abi,
-            functionName: "refund",
+            functionName: "redeem",
             args: [id],
         })));
     }, [pool, address, multicall]);
