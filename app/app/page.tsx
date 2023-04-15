@@ -2,7 +2,7 @@
 import Image from "next/image"
 import { Disclosure } from '@headlessui/react'
 import { IPool } from "@/interfaces"
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { ContractsContext } from "@/context/contracts";
 import { STATES, usePool } from "@/hooks/usePool"
 
@@ -14,7 +14,7 @@ export default function Home() {
     const { pools } = useContext(ContractsContext);
 
     return (
-        <main className="pt-5">
+        <main className="pt-5 pb-36">
             <div className="text-left">
                 <span className="max-w-xl inline-block">
                     list of pools created with this protocol, each pool has mixed several collections as a new collection,
@@ -46,6 +46,10 @@ export default function Home() {
 
 function PoolItem({ detail: d }: { detail: IPool }) {
     const { mint } = usePool(d.address);
+
+    const total = useMemo(() => (
+        d.orders?.reduce((acc, c) => acc + c.quantity, 0)
+    ), [d]);
 
     return (
         <Disclosure as="div" className="pt-3">
@@ -94,7 +98,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                                 {o.collection.name}
                             </span>
                             <span>{o.collection.address?.slice(0, 6)}...{o.collection.address?.slice(38, 42)}</span>
-                            <span>20%</span>
+                            <span>{fixed(o.quantity / Number(total) * 100)}%</span>
                         </div>
                     ))}
 
