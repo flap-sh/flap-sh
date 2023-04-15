@@ -14,16 +14,19 @@ export interface IPool {
     id: number;
     address: string;
     orders: IOrder[];
-    status: string;
+    state: number;
     price: number;
     minted: number;
+    currentSupply: number;
     totalSupply: number;
+    balance: number;
 }
 
 export interface IItem {
-    collection: ICollection,
+    poolId: number,
     id: number,
     owner: string;
+    cost: number;
 }
 
 /// well this context is actually a database!

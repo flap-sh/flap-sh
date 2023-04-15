@@ -40,3 +40,7 @@ input:focus,
 button:focus {
   outline: none;
 }
+
+input[type="radio"] {
+  accent-color: black;
+}

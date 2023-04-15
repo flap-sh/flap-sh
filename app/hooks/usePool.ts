@@ -2,6 +2,14 @@ import { IPool, ICollection } from '@/interfaces'
 import { useState } from 'react';
 import { pools } from "@/context/mock"
 
+export const STATES = [
+    "Mintable",
+    "Refundable",
+    "Revealable",
+    "Redeemable",
+    "All", // this is a special state just for the UI
+];
+
 export function usePool(_address: string) {
     //
     //
