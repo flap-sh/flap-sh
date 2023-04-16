@@ -67,7 +67,7 @@ const fetchPoolState = async (pools: IPool[]): Promise<IPool[]> => {
             return {
                 abi: IPoolABI.abi,
                 address: pool.address as any,
-                functionName: "poolCachedState",
+                functionName: "poolState",
             }
         })
     });

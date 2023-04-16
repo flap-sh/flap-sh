@@ -20,7 +20,7 @@ export const ContractsContext = createContext<IContractsContext>({
 });
 
 export function ContractsProvider({ children }: { children: React.ReactNode }) {
-    const factory = "0xA8349DaFc9510dd7E9b64bac07D25A57B4F4Da2D";
+    const factory = "0x4E2ef6246c90831Dd81ce83A90d81cDe31bdaE01";
     const [trigger, setTrigger] = useState(false);
     const { createdPools, wlCollections } = useFactory(factory);
     const { collections } = useCollections(wlCollections);

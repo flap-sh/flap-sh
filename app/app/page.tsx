@@ -2,10 +2,10 @@
 import Image from "next/image"
 import { Disclosure } from '@headlessui/react'
 import { IPool } from "@/interfaces"
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { ContractsContext } from "@/context/contracts";
 import { STATES, usePool } from "@/hooks/usePool"
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 
@@ -14,7 +14,18 @@ const fixed = (value: number) => {
 };
 
 export default function Home() {
-    const { pools } = useContext(ContractsContext);
+    const { pools: rawPools } = useContext(ContractsContext);
+    const [pools, setPools] = useState(rawPools);
+
+    useEffect(() => {
+        setPools(rawPools);
+    }, [rawPools]);
+
+    const sortState = () => {
+        let newPools = [...pools];
+        newPools.sort((a, b) => Number(a?.state) - Number(b.state))
+        setPools(newPools);
+    };
 
     return (
         <main className="pt-5">
@@ -34,7 +45,14 @@ export default function Home() {
                 <span className="text-center">id</span>
                 <span>address</span>
                 <span>collections</span>
-                <span>state</span>
+                <span className="flex flex-row items-center">
+                    <span>state</span>
+                    <FontAwesomeIcon
+                        icon={faSortDown}
+                        onClick={sortState}
+                        className="pl-1 pb-1 hover:cursor-pointer"
+                    />
+                </span>
                 <span>price</span>
                 <span>minted</span>
             </div>
@@ -86,7 +104,7 @@ function PoolItem({ detail: d }: { detail: IPool }) {
                     <div className="grid grid-cols-4 text-center">
                         <span className="col-span-2">collection</span>
                         <span>address</span>
-                        <span>chance</span>
+                        <span>odds</span>
                     </div>
                     {d.orders?.map((o, idx) => (
                         <div key={idx} className="grid grid-cols-4 pt-3 text-center">
