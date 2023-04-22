@@ -8,6 +8,7 @@ import { STATES, usePool } from "@/hooks/usePool"
 import { faPlus, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEthereum } from "@fortawesome/free-brands-svg-icons";
+import { Dropdown } from "@/app/index/dropdown";
 
 const fixed = (value: number) => {
     return (Math.round(value * 100) / 100).toFixed(2);
@@ -18,12 +19,22 @@ export default function Home() {
     const [pools, setPools] = useState(rawPools);
 
     useEffect(() => {
-        setPools(rawPools);
+        setPools(rawPools.filter((d: IPool) => d.state === 0));
     }, [rawPools]);
 
-    const sortState = () => {
+    const filterState = (state: number) => {
+        if (state == 4) {
+            setPools(rawPools);
+            return;
+        }
+
+        const newPools = rawPools.filter((d: IPool) => d.state === state);
+        setPools(newPools);
+    };
+
+    const sortPrice = () => {
         let newPools = [...pools];
-        newPools.sort((a, b) => Number(a?.state) - Number(b.state))
+        newPools.sort((a, b) => Number(a.price) - Number(b.price))
         setPools(newPools);
     };
 
@@ -45,15 +56,17 @@ export default function Home() {
                 <span className="text-center">id</span>
                 <span>address</span>
                 <span>collections</span>
+                <span className="flex flex-col">
+                    <Dropdown filterState={filterState} />
+                </span>
                 <span className="flex flex-row items-center">
-                    <span>state</span>
+                    <span>price</span>
                     <FontAwesomeIcon
                         icon={faSortDown}
-                        onClick={sortState}
+                        onClick={sortPrice}
                         className="pl-1 pb-1 hover:cursor-pointer"
                     />
                 </span>
-                <span>price</span>
                 <span>minted</span>
             </div>
             <div> {/* pool list */}
