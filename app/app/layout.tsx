@@ -27,7 +27,9 @@ export default function RootLayout({
                     <Navbar />
                     {children}
                     <footer className="text-center py-8 text-sm">
-                        built with ❤️  by <a href="https://github.com/flap-sh">flap.sh</a> team
+                        <div className="absolute bottom-8 max-w-6xl w-full">
+                            <span>built with ❤️  by <a href="https://github.com/flap-sh">flap.sh</a> team</span>
+                        </div>
                     </footer>
                 </RootProvider>
             </body>
