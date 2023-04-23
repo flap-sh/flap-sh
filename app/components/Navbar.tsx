@@ -10,6 +10,7 @@ export default function Navbar() {
         <div className="flex justify-between py-10">
             <div className="hover:cursor-pointer">
                 <a className="text-2xl" href="/">Flap.sh</a>
+                <a className="text-lg pl-8" href="/collection">Collections</a>
                 <a className="text-lg pl-8" href="/portfolio">Portfolio</a>
             </div>
             <div>
