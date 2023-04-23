@@ -206,7 +206,7 @@ export default function Portfolio() {
                 </div>
 
                 {/* List here */}
-                <div className="border-t border-solid">
+                <div className="border-t border-solid max-h-96 overflow-y-auto">
                     <div className="grid grid-cols-5 grid-gap-4 pt-6">
                         <span className="text-center">
                             {selected && selected.state !== 2 && selected.state !== 0 && <input

@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="max-w-6xl m-auto px-8 min-h-full">
+            <body className="max-w-6xl m-auto px-8">
                 <RootProvider>
                     <Navbar />
                     {children}

@@ -21,8 +21,7 @@ export default function Home() {
     const [list, setList] = useState<IPool[]>([]);
 
     useEffect(() => {
-        setPools([rawPools, rawPools].flat());
-        // setPools(rawPools.filter((d: IPool) => d.state === 0));
+        setPools(rawPools);
     }, [rawPools]);
 
     const filterState = (state: number) => {
