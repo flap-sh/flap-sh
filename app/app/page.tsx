@@ -9,6 +9,7 @@ import { faPlus, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { Dropdown } from "@/app/index/dropdown";
+import Pagination from "@/components/Pagination";
 
 const fixed = (value: number) => {
     return (Math.round(value * 100) / 100).toFixed(2);
@@ -17,9 +18,11 @@ const fixed = (value: number) => {
 export default function Home() {
     const { pools: rawPools } = useContext(ContractsContext);
     const [pools, setPools] = useState(rawPools);
+    const [list, setList] = useState<IPool[]>([]);
 
     useEffect(() => {
-        setPools(rawPools.filter((d: IPool) => d.state === 0));
+        setPools([rawPools, rawPools].flat());
+        // setPools(rawPools.filter((d: IPool) => d.state === 0));
     }, [rawPools]);
 
     const filterState = (state: number) => {
@@ -41,7 +44,7 @@ export default function Home() {
     return (
         <main className="pt-5">
             <div className="text-left">
-                <span className="max-w-xl inline-block">
+                <span className="max-w-2xl inline-block">
                     list of pools created with this protocol, each pool has mixed several collections as a new collection,
                     sure, with new mint price as well! what about mint Azuki at <FontAwesomeIcon icon={faEthereum} beat /> 0.08 again?
                 </span>
@@ -70,10 +73,11 @@ export default function Home() {
                 <span>minted</span>
             </div>
             <div> {/* pool list */}
-                {pools.map((d: IPool, idx: number) => (
+                {list.map((d: IPool, idx: number) => (
                     <PoolItem key={idx} detail={d} />
                 ))}
             </div>
+            <Pagination<IPool> count={10} all={pools} setList={setList} />
         </main>
     )
 }
