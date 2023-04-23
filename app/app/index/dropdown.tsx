@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons";
 
 export function Dropdown({ filterState }: { filterState: (state: number) => void }) {
-    const [state, setState] = useState(0);
+    const [state, setState] = useState(4);
 
     return (
         <Menu>

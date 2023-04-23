@@ -22,12 +22,12 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="max-w-6xl m-auto px-8 min-h-full">
+            <body className="max-w-6xl m-auto px-8">
                 <RootProvider>
                     <Navbar />
                     {children}
                     <footer className="text-center py-8 text-sm">
-                        <div className="absolute bottom-8 max-w-6xl w-full">
+                        <div className="max-w-6xl w-full">
                             <span>built with ❤️  by <a href="https://github.com/flap-sh">flap.sh</a> team</span>
                         </div>
                     </footer>
