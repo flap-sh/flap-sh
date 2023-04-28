@@ -5,7 +5,7 @@ import { Fragment, useState } from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons";
 
-export function Dropdown({ filterState }: { filterState: (state: number) => void }) {
+export default function Dropdown({ filterState }: { filterState: (state: number) => void }) {
     const [state, setState] = useState(4);
 
     return (
