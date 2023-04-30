@@ -4,6 +4,8 @@ export interface ICollection {
     logo: string;
     name: string;
     address: string;
+    price?: number;
+    count?: number;
 }
 
 export interface IOrder {

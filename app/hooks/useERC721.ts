@@ -1,9 +1,7 @@
-import { ICollection, IPool, IItem } from "@/interfaces"
+import { ICollection } from "@/interfaces"
 import { useEffect, useState } from "react"
 import { readContracts } from "wagmi";
 import IPoolABI from "@/abi/IPool.json";
-
-import { items } from "@/context/mock"
 
 const LOGOS: Record<string, string> = {
     "0x45c05abdb37942ff4ad0bfc7a8af9bf5b43e1204": "0xbd3531da5cf5857e7cfaa92426877b022e612cf8", // Penny-bridged
