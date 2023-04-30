@@ -16,7 +16,7 @@ export default function Item({ pools: allPools, collection: col }: { pools: IPoo
                 const orders = p.orders?.filter((o) => o.collection.address === col.address);
                 return orders?.length ? true : false;
             }
-        ), [allPools]
+        ), [allPools, col.address]
     );
 
     const hidden = useMemo(() => pools.length ? false : true, [pools]);
@@ -72,7 +72,7 @@ function Pool({ collection: col, pool }: { collection: ICollection, pool: IPool 
         const odds = count ? Number(pool.orders?.map((o) => o.quantity)) / Number(count) : 0;
 
         return { count, odds }
-    }, []);
+    }, [col.address, pool.orders]);
 
     return (
         <div className={"grid grid-cols-8 gap-6 pt-3 " + `${odds > 0 ? "" : "hidden"}`}>

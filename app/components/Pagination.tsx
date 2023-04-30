@@ -28,7 +28,7 @@ export default function Pagination<T>({
         const start = (page - 1) * count;
         const end = start + count;
         setList(all.slice(start, end));
-    }, [page, count, all]);
+    }, [page, count, all, setList]);
 
     const leftDisabled = useMemo(() => page == pages[0], [page, pages]);
     const rightDisabled = useMemo(() => page == pages[pages.length - 1], [page, pages]);
