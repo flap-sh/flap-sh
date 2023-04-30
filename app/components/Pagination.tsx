@@ -46,7 +46,7 @@ export default function Pagination<T>({
                     <button
                         className={`px-3 ${page == item && "underline underline-offset-4"}`}
                         key={index}
-                        onClick={() => setPage(item)}
+                        onClick={() => !leftDisabled && setPage(item)}
                     >
                         {item}
                     </button>
@@ -55,7 +55,7 @@ export default function Pagination<T>({
             <button disabled={rightDisabled}>
                 <ChevronRightIcon
                     className={`h-5 w-5 ${rightDisabled && "text-gray-500"}`}
-                    onClick={() => { setPage(page + 1) }}
+                    onClick={() => { !rightDisabled && setPage(page + 1) }}
                 />
             </button>
         </div >

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 
 const fixed = (value: number) => {
-    return Number((Math.round(value * 100) / 100).toFixed(2));
+    return Number(value.toFixed(3));
 };
 
 export default function Item({ detail: d }: { detail: IPool }) {

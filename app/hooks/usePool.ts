@@ -29,7 +29,6 @@ const fetchPoolParams = async (pools: IPool[], collections: ICollection[]): Prom
         })
     });
 
-
     return pools.map((pool, index) => ({
         ...pool,
         id: (params[index] as any).poolID.toNumber(),

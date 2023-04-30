@@ -1,11 +1,11 @@
 "use client"
-import Image from "next/image"
 import { ContractsContext } from "@/context/contracts"
 import { ICollection, IPool } from "@/interfaces";
 import { useContext, useMemo } from "react"
+import Item from "./item";
 
 const fixed = (value: number) => {
-    return Number((Math.round(value * 100) / 100).toFixed(2));
+    return Number(value.toFixed(3));
 };
 
 export default function Collections() {
@@ -30,26 +30,12 @@ export default function Collections() {
                 <div className="grid grid-cols-4 pb-3 font-bold">
                     <span>collection</span>
                     <span>address</span>
-                    <span>price</span>
+                    <span>avg price</span>
                     <span>count</span>
                 </div>
                 {cols.map((col: ICollection) => (
                     <div key={col.address} className="py-2">
-                        <div className="grid grid-cols-4">
-                            <span className="flex flex-row items-center">
-                                <Image
-                                    height={15}
-                                    width={15}
-                                    className="mr-2"
-                                    src={col.logo}
-                                    alt={col.address}
-                                />
-                                {col.name}
-                            </span>
-                            <span>{col.address.slice(0, 6) + "..." + col.address.slice(38, 42)}</span>
-                            <span>{col.price}</span>
-                            <span>{col.count}</span>
-                        </div>
+                        <Item pools={pools} collection={col} />
                     </div>
                 ))}
             </div>
@@ -70,14 +56,15 @@ const calCollections = (collections: ICollection[], pools: IPool[]): ICollection
         {}
     );
 
-    pools.forEach((pool) => {
+    pools.filter((p) => p.state === 0).forEach((pool) => {
         pool.orders?.forEach((order) => {
             const addr = order.collection.address;
             const [c, p] = [cols[addr].count, cols[addr].price];
             const count: number = c ? Number(c) : 0;
             const price: number = p ? Number(p) : 0;
-            cols[addr].price = fixed((price * count + Number(order.price)) / (count + 1));
-            cols[addr].count = count + 1;
+
+            cols[addr].price = fixed((price * count + Number(order.price) * order.quantity) / (count + order.quantity));
+            cols[addr].count = count + order.quantity;
         });
     });
 
